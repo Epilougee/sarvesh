@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Subjects - EduSchedule{% endblock %}
+{% block header_title %}Academic Subjects{% endblock %}
+
+{% block header_actions %}
+<button class="btn btn-primary" onclick="openModal('addSubjectModal')">
+  <i class="fa-solid fa-plus"></i>
+  <span>Add Subject</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <h2 class="card-title">
+        <i class="fa-solid fa-book-bookmark"></i>
+        <span>Curriculum Subjects</span>
+      </h2>
+      <p class="card-subtitle">Manage course modules, course codes, and view scheduled period loads.</p>
+    </div>
+  </div>
+
+  {% if subjects %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Course Code</th>
+            <th>Subject Name</th>
+            <th>Qualified Faculty</th>
+            <th>Weekly Classes</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in subjects %}
+            <tr>
+              <td>
+                <span class="slot-code" style="font-size: 12px; font-weight: 700; padding: 3px 8px;">{{ s.code }}</span>
+              </td>
+              <td>
+                <strong>{{ s.name }}</strong>
+              </td>
+              <td>
+                <span class="badge-tag">
+                  <i class="fa-solid fa-user-check"></i>
+                  {{ s.faculty_count }} faculty
+                </span>
+              </td>
+              <td>
+                <span class="badge-tag" style="background: #F3F4F6; color: var(--text);">
+                  <i class="fa-regular fa-clock"></i>
+                  {{ s.period_count }} periods
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <div class="table-actions" style="justify-content: flex-end;">
+                  <button class="btn-icon" title="Edit Subject" onclick="openEditSubjectModal('{{ s.id }}', '{{ s.name|escape }}', '{{ s.code|escape }}')">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+
+                  <form method="POST" action="{{ url_for('subjects_delete', subject_id=s.id) }}" class="confirm-delete" data-confirm-message="Are you sure you want to delete {{ s.name }} ({{ s.code }})? All related timetable slots will also be removed.">
+                    <button type="submit" class="btn-icon delete" title="Delete Subject">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fa-solid fa-book-open"></i>
+      </div>
+      <div class="empty-state-title">No subjects added yet</div>
+      <div class="empty-state-text">Add your academic course modules to begin creating the timetable.</div>
+      <button class="btn btn-primary" onclick="openModal('addSubjectModal')">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add Subject</span>
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Modal: Add Subject -->
+<div class="modal-backdrop" id="addSubjectModal">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 class="modal-title">Add Academic Subject</h3>
+      <button class="modal-close" onclick="closeModal('addSubjectModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" action="{{ url_for('subjects_add') }}">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="add_subj_name">Subject Name *</label>
+          <input type="text" id="add_subj_name" name="name" class="form-control" placeholder="e.g. Data Structures & Algorithms" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="add_subj_code">Subject Code *</label>
+          <input type="text" id="add_subj_code" name="code" class="form-control" placeholder="e.g. CS301" required style="text-transform: uppercase;">
+          <div class="form-helper">Unique code identifying the course module</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('addSubjectModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save Subject</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Edit Subject -->
+<div class="modal-backdrop" id="editSubjectModal">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Academic Subject</h3>
+      <button class="modal-close" onclick="closeModal('editSubjectModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" id="editSubjectForm" action="">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="edit_subj_name">Subject Name *</label>
+          <input type="text" id="edit_subj_name" name="name" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="edit_subj_code">Subject Code *</label>
+          <input type="text" id="edit_subj_code" name="code" class="form-control" required style="text-transform: uppercase;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('editSubjectModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update Subject</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openEditSubjectModal(id, name, code) {
+  document.getElementById('editSubjectForm').action = "/subjects/edit/" + id;
+  document.getElementById('edit_subj_name').value = name;
+  document.getElementById('edit_subj_code').value = code;
+  openModal('editSubjectModal');
+}
+</script>
+{% endblock %}
+

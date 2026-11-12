@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Faculty & Timetable Management{% endblock %}</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div>
+          <div class="sidebar-title">Timetable Portal</div>
+          <div class="sidebar-sub">{{ institution_type|capitalize }} Mode</div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        {% if current_user and current_user.role == 'admin' %}
+          <div class="nav-section-title">Main</div>
+          <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.path == url_for('dashboard') %}active{% endif %}">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+
+          <div class="nav-section-title">Timetable</div>
+          <a href="{{ url_for('timetable_builder') }}" class="nav-link {% if request.path.startswith('/timetable/builder') %}active{% endif %}">
+            <i class="fa-solid fa-calendar-plus"></i>
+            <span>Timetable Builder</span>
+          </a>
+          <a href="{{ url_for('timetable_view') }}" class="nav-link {% if request.path.startswith('/timetable/view') %}active{% endif %}">
+            <i class="fa-solid fa-table-cells"></i>
+            <span>View Timetables</span>
+          </a>
+
+          <div class="nav-section-title">Academic Records</div>
+          <a href="{{ url_for('faculty_list') }}" class="nav-link {% if request.path.startswith('/faculty') %}active{% endif %}">
+            <i class="fa-solid fa-user-tie"></i>
+            <span>Faculty</span>
+          </a>
+          <a href="{{ url_for('subjects_list') }}" class="nav-link {% if request.path.startswith('/subjects') %}active{% endif %}">
+            <i class="fa-solid fa-book-open"></i>
+            <span>Subjects</span>
+          </a>
+          <a href="{{ url_for('groups_list') }}" class="nav-link {% if request.path.startswith('/groups') %}active{% endif %}">
+            <i class="fa-solid fa-users"></i>
+            <span>{{ group_label }}s</span>
+          </a>
+          <a href="{{ url_for('rooms_list') }}" class="nav-link {% if request.path.startswith('/rooms') %}active{% endif %}">
+            <i class="fa-solid fa-door-open"></i>
+            <span>Rooms & Labs</span>
+          </a>
+          <a href="{{ url_for('timeslots_list') }}" class="nav-link {% if request.path.startswith('/timeslots') %}active{% endif %}">
+            <i class="fa-solid fa-clock"></i>
+            <span>Periods / Timeslots</span>
+          </a>
+
+          <div class="nav-section-title">System</div>
+          <a href="{{ url_for('settings') }}" class="nav-link {% if request.path.startswith('/settings') %}active{% endif %}">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Settings</span>
+          </a>
+        {% elif current_user and current_user.role == 'faculty' %}
+          <div class="nav-section-title">Faculty Portal</div>
+          <a href="{{ url_for('my_timetable') }}" class="nav-link {% if request.path == url_for('my_timetable') %}active{% endif %}">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>My Timetable</span>
+          </a>
+          <a href="{{ url_for('timetable_view') }}" class="nav-link {% if request.path == url_for('timetable_view') %}active{% endif %}">
+            <i class="fa-solid fa-table-cells"></i>
+            <span>Institution Schedule</span>
+          </a>
+        {% endif %}
+      </nav>
+
+      <!-- User Profile & Logout -->
+      <div class="sidebar-footer">
+        <div class="user-badge">
+          <div class="user-avatar">
+            <i class="fa-regular fa-user"></i>
+          </div>
+          <div class="user-info">
+            <span class="user-name" title="{{ current_user.name }}">{{ current_user.name }}</span>
+            <span class="user-role">{{ current_user.role }}</span>
+          </div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline" style="width: 100%; justify-content: flex-start; padding: 7px 12px;">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          <span>Log out</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation">
+            <i class="fa-solid fa-bars"></i>
+          </button>
+          <h1 class="page-title">{% block header_title %}Dashboard{% endblock %}</h1>
+        </div>
+        <div class="topbar-right">
+          <span class="badge-tag">
+            <i class="fa-solid fa-building-columns"></i>
+            <span>{{ institution_type|capitalize }}</span>
+          </span>
+          {% block header_actions %}{% endblock %}
+        </div>
+      </header>
+
+      <!-- Content Area -->
+      <main class="content-area">
+        <!-- Flash Notifications -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="flash-alert {{ category }}">
+                  <span>
+                    {% if category == 'success' %}
+                      <i class="fa-solid fa-circle-check" style="margin-right: 6px;"></i>
+                    {% elif category == 'danger' %}
+                      <i class="fa-solid fa-circle-exclamation" style="margin-right: 6px;"></i>
+                    {% else %}
+                      <i class="fa-solid fa-circle-info" style="margin-right: 6px;"></i>
+                    {% endif %}
+                    {{ message }}
+                  </span>
+                  <button class="flash-close" aria-label="Close notification">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <!-- Vanilla JS -->
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

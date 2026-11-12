@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}System Settings - EduSchedule{% endblock %}
+{% block header_title %}System Settings{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 680px;">
+  <div class="card-header">
+    <div>
+      <h2 class="card-title">
+        <i class="fa-solid fa-sliders"></i>
+        <span>Institution Configuration</span>
+      </h2>
+      <p class="card-subtitle">Select your academic institution model. This controls terminology and group naming conventions across the system.</p>
+    </div>
+  </div>
+
+  <form method="POST" action="{{ url_for('settings') }}">
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
+      
+      <!-- Option 1: College / University -->
+      <label style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 14px; cursor: pointer; transition: var(--transition); background: {% if current_setting == 'college' %}var(--primary-light){% else %}#fff{% endif %};">
+        <input type="radio" name="institution_type" value="college" {% if current_setting == 'college' %}checked{% endif %} style="margin-top: 3px;">
+        <div>
+          <div style="font-weight: 700; color: var(--text); font-size: 14px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-building-columns" style="color: var(--primary);"></i>
+            <span>College / University Model</span>
+          </div>
+          <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">
+            Student cohorts are organized by <strong>Degree, Semester, and Division</strong> (e.g. <em>BCA Sem 3 A</em>, <em>B.Tech CSE Sem 5</em>). Faculty are organized into academic departments.
+          </div>
+        </div>
+      </label>
+
+      <!-- Option 2: School (K-12) -->
+      <label style="border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px; display: flex; gap: 14px; cursor: pointer; transition: var(--transition); background: {% if current_setting == 'school' %}var(--primary-light){% else %}#fff{% endif %};">
+        <input type="radio" name="institution_type" value="school" {% if current_setting == 'school' %}checked{% endif %} style="margin-top: 3px;">
+        <div>
+          <div style="font-weight: 700; color: var(--text); font-size: 14px; display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-school" style="color: var(--accent);"></i>
+            <span>School (K-12) Model</span>
+          </div>
+          <div style="color: var(--muted); font-size: 12px; margin-top: 4px;">
+            Student groups are organized by <strong>Standard / Grade and Section</strong> (e.g. <em>8-A</em>, <em>9-B</em>, <em>10-C</em>).
+          </div>
+        </div>
+      </label>
+
+    </div>
+
+    <div style="background: #F8FAFC; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 24px; font-size: 12px; color: var(--muted);">
+      <i class="fa-solid fa-circle-info" style="color: var(--primary); margin-right: 6px;"></i>
+      <strong>Database Note:</strong> The system stores all groups inside the unified <code>groups</code> table with a single <code>name</code> column, keeping queries lightweight and easy to defend during project evaluation.
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      <i class="fa-solid fa-check"></i>
+      <span>Save Institution Settings</span>
+    </button>
+  </form>
+</div>
+{% endblock %}
+

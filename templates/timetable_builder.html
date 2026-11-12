@@ -1,0 +1,204 @@
+{% extends "base.html" %}
+
+{% block title %}Timetable Builder - EduSchedule{% endblock %}
+{% block header_title %}Timetable Builder{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('timetable_view', type='group', id=selected_group_id) }}" class="btn btn-outline">
+  <i class="fa-solid fa-eye"></i>
+  <span>View Mode</span>
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Group Selector Bar -->
+<div class="card" style="padding: 16px 20px; margin-bottom: 20px;">
+  <form method="GET" action="{{ url_for('timetable_builder') }}" style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
+    <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+      <label for="group_select" style="font-weight: 600; font-size: 13px; color: var(--text);">
+        <i class="fa-solid fa-users" style="margin-right: 6px; color: var(--primary);"></i>
+        Select {{ group_label }}:
+      </label>
+      <select id="group_select" name="group_id" class="form-control" style="width: auto; min-width: 220px;" onchange="this.form.submit()">
+        {% for g in groups %}
+          <option value="{{ g.id }}" {% if g.id == selected_group_id %}selected{% endif %}>
+            {{ g.name }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div style="font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px;">
+      <i class="fa-solid fa-circle-info" style="color: var(--primary);"></i>
+      <span>Click any empty cell below to schedule a class. Automatic clash detection is active.</span>
+    </div>
+  </form>
+</div>
+
+<!-- Timetable Grid -->
+{% if selected_group %}
+  <div class="card" style="padding: 0; overflow: hidden;">
+    <div style="padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between;">
+      <h3 style="font-size: 15px; font-weight: 700; color: var(--text);">
+        Weekly Schedule: <span style="color: var(--primary);">{{ selected_group.name }}</span>
+      </h3>
+      <span class="badge-tag">
+        <i class="fa-solid fa-shield-halved"></i>
+        <span>Clash Prevention Active</span>
+      </span>
+    </div>
+
+    {% if timeslots %}
+      <div class="timetable-container" style="border: none; border-radius: 0; box-shadow: none;">
+        <table class="timetable-grid">
+          <thead>
+            <tr>
+              <th class="day-col">Day / Period</th>
+              {% for ts in timeslots %}
+                <th>
+                  <div>{{ ts.label }}</div>
+                  <div class="time-header">{{ ts.start_time }} - {{ ts.end_time }}</div>
+                </th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for day in days_of_week %}
+              <tr>
+                <th class="day-col">{{ day }}</th>
+                {% for ts in timeslots %}
+                  {% set entry = grid_data[day].get(ts.id) %}
+                  <td class="timetable-cell">
+                    {% if entry %}
+                      <!-- Deterministic soft pastel tint based on subject_id -->
+                      {% set color_idx = (entry.subject_id % 8) + 1 %}
+                      <div class="slot-card pastel-{{ color_idx }}">
+                        <div>
+                          <div class="slot-subject">
+                            <span title="{{ entry.subject_name }}">{{ entry.subject_name }}</span>
+                            <span class="slot-code">{{ entry.subject_code }}</span>
+                          </div>
+                          <div class="slot-details">
+                            <div class="slot-detail-item" title="{{ entry.faculty_name }}">
+                              <i class="fa-solid fa-chalkboard-user"></i>
+                              <span>{{ entry.faculty_name }}</span>
+                            </div>
+                            <div class="slot-detail-item" title="{{ entry.room_name }}">
+                              <i class="fa-solid fa-location-dot"></i>
+                              <span>{{ entry.room_name }}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Delete Slot Button -->
+                        <form method="POST" action="{{ url_for('timetable_delete', timetable_id=entry.id) }}" class="confirm-delete" data-confirm-message="Remove this scheduled period ({{ entry.subject_name }})?">
+                          <input type="hidden" name="group_id" value="{{ selected_group_id }}">
+                          <button type="submit" class="slot-delete-btn" title="Remove Period">
+                            <i class="fa-solid fa-xmark"></i>
+                          </button>
+                        </form>
+                      </div>
+                    {% else %}
+                      <!-- Empty Slot: Clickable to add -->
+                      <div class="cell-empty"
+                           data-day="{{ day }}"
+                           data-timeslot-id="{{ ts.id }}"
+                           data-timeslot-label="{{ ts.label }} ({{ ts.start_time }} - {{ ts.end_time }})"
+                           title="Click to schedule class on {{ day }} - {{ ts.label }}">
+                        <span class="cell-add-btn">
+                          <i class="fa-solid fa-plus"></i> Assign
+                        </span>
+                      </div>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state-icon"><i class="fa-regular fa-clock"></i></div>
+        <div class="empty-state-title">No timeslots configured</div>
+        <div class="empty-state-text">Please define periods in the Timeslots section before scheduling classes.</div>
+        <a href="{{ url_for('timeslots_list') }}" class="btn btn-primary">Add Periods</a>
+      </div>
+    {% endif %}
+  </div>
+{% else %}
+  <div class="card">
+    <div class="empty-state">
+      <div class="empty-state-icon"><i class="fa-solid fa-users"></i></div>
+      <div class="empty-state-title">No {{ group_label|lower }}s found</div>
+      <div class="empty-state-text">Please create a student group or class first.</div>
+      <a href="{{ url_for('groups_list') }}" class="btn btn-primary">Create {{ group_label }}</a>
+    </div>
+  </div>
+{% endif %}
+
+<!-- Modal: Assign Period to Timetable -->
+<div class="modal-backdrop" id="addSlotModal">
+  <div class="modal-window">
+    <div class="modal-header">
+      <div>
+        <h3 class="modal-title">Schedule Period</h3>
+        <div id="slot_display_info" style="font-size: 12px; color: var(--primary); font-weight: 600; margin-top: 2px;"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal('addSlotModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" action="{{ url_for('timetable_add') }}">
+      <input type="hidden" name="group_id" value="{{ selected_group_id }}">
+      <input type="hidden" name="day" id="slot_day">
+      <input type="hidden" name="timeslot_id" id="slot_timeslot_id">
+
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Target {{ group_label }}</label>
+          <input type="text" class="form-control" value="{{ selected_group.name if selected_group else '' }}" disabled style="background-color: #F8FAFC;">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="subject_id">Subject *</label>
+          <select name="subject_id" id="subject_id" class="form-control" required>
+            <option value="" disabled selected>-- Select Subject --</option>
+            {% for s in all_subjects %}
+              <option value="{{ s.id }}">{{ s.code }} - {{ s.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="faculty_id">Faculty Member *</label>
+          <select name="faculty_id" id="faculty_id" class="form-control" required>
+            <option value="" disabled selected>-- Select Faculty --</option>
+            {% for f in all_faculty %}
+              <option value="{{ f.id }}">{{ f.name }} ({{ f.department }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="room_id">Classroom / Laboratory *</label>
+          <select name="room_id" id="room_id" class="form-control" required>
+            <option value="" disabled selected>-- Select Room / Lab --</option>
+            {% for r in all_rooms %}
+              <option value="{{ r.id }}">{{ r.name }} (Cap: {{ r.capacity }})</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div style="background: #F8FAFC; border: 1px dashed var(--border); border-radius: var(--radius-sm); padding: 10px 12px; font-size: 11px; color: var(--muted);">
+          <i class="fa-solid fa-shield-halved" style="color: var(--primary); margin-right: 4px;"></i>
+          <strong>Clash Guard:</strong> The system automatically verifies that the chosen faculty, room, and group are completely free during this period before saving.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('addSlotModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Schedule Class</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+

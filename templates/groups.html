@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}{{ group_label }}s - EduSchedule{% endblock %}
+{% block header_title %}{{ group_label }} Management{% endblock %}
+
+{% block header_actions %}
+<button class="btn btn-primary" onclick="openModal('addGroupModal')">
+  <i class="fa-solid fa-plus"></i>
+  <span>Add {{ group_label }}</span>
+</button>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-header">
+    <div>
+      <h2 class="card-title">
+        <i class="fa-solid fa-people-roof"></i>
+        <span>Student {{ group_label }}s</span>
+      </h2>
+      <p class="card-subtitle">
+        Current Mode: <strong>{{ institution_type|capitalize }}</strong>.
+        {% if institution_type == 'school' %}
+          Groups represent academic classes and sections (e.g. 8-A, 9-B, 10-A).
+        {% else %}
+          Groups represent degree courses, semesters, and divisions (e.g. BCA Sem 3 A, B.Tech CSE Sem 5).
+        {% endif %}
+      </p>
+    </div>
+  </div>
+
+  {% if groups %}
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>{{ group_label }} Name</th>
+            <th>Weekly Classes Scheduled</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for g in groups %}
+            <tr>
+              <td>
+                <span class="badge-tag" style="font-size: 13px; padding: 6px 12px;">{{ g.name }}</span>
+              </td>
+              <td>
+                <span class="form-helper" style="font-size: 13px;">
+                  <i class="fa-regular fa-calendar-check" style="margin-right: 4px; color: var(--primary);"></i>
+                  {{ g.classes_count }} scheduled periods
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <div class="table-actions" style="justify-content: flex-end;">
+                  <a href="{{ url_for('timetable_builder', group_id=g.id) }}" class="btn btn-outline" style="padding: 5px 10px; font-size: 12px;" title="Build Timetable">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Builder</span>
+                  </a>
+
+                  <button class="btn-icon" title="Edit Group" onclick="openEditGroupModal('{{ g.id }}', '{{ g.name|escape }}')">
+                    <i class="fa-solid fa-pen"></i>
+                  </button>
+
+                  <form method="POST" action="{{ url_for('groups_delete', group_id=g.id) }}" class="confirm-delete" data-confirm-message="Are you sure you want to delete {{ g.name }}? All scheduled timetable periods for this group will be deleted.">
+                    <button type="submit" class="btn-icon delete" title="Delete Group">
+                      <i class="fa-solid fa-trash"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">
+        <i class="fa-solid fa-users-slash"></i>
+      </div>
+      <div class="empty-state-title">No {{ group_label|lower }}s registered yet</div>
+      <div class="empty-state-text">Create your student classes or cohorts to start scheduling lectures.</div>
+      <button class="btn btn-primary" onclick="openModal('addGroupModal')">
+        <i class="fa-solid fa-plus"></i>
+        <span>Add {{ group_label }}</span>
+      </button>
+    </div>
+  {% endif %}
+</div>
+
+<!-- Modal: Add Group -->
+<div class="modal-backdrop" id="addGroupModal">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 class="modal-title">Add {{ group_label }}</h3>
+      <button class="modal-close" onclick="closeModal('addGroupModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" action="{{ url_for('groups_add') }}">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="add_group_name">{{ group_label }} Name *</label>
+          <input type="text" id="add_group_name" name="name" class="form-control" placeholder="{{ group_placeholder }}" required>
+          <div class="form-helper">
+            {% if institution_type == 'school' %}
+              Format: Standard - Section (e.g., 8-A, 9-B, 10-C)
+            {% else %}
+              Format: Degree Sem Division (e.g., BCA Sem 3 A, B.Tech CSE Sem 5)
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('addGroupModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save {{ group_label }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Edit Group -->
+<div class="modal-backdrop" id="editGroupModal">
+  <div class="modal-window">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit {{ group_label }}</h3>
+      <button class="modal-close" onclick="closeModal('editGroupModal')"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <form method="POST" id="editGroupForm" action="">
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label" for="edit_group_name">{{ group_label }} Name *</label>
+          <input type="text" id="edit_group_name" name="name" class="form-control" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="closeModal('editGroupModal')">Cancel</button>
+        <button type="submit" class="btn btn-primary">Update {{ group_label }}</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openEditGroupModal(id, name) {
+  document.getElementById('editGroupForm').action = "/groups/edit/" + id;
+  document.getElementById('edit_group_name').value = name;
+  openModal('editGroupModal');
+}
+</script>
+{% endblock %}
+
