@@ -20,8 +20,8 @@ This file serves as the persistent technical memory and reference for this proje
 ---
 
 ## 3. Vercel Deployment Architecture
-- **Entry Point:** `api/index.py` adds the project root to `sys.path` and exports `app` from `app.py`.
-- **Routing:** `vercel.json` rewrites `/(.*)` to `/api/index`.
+- **Entry Point:** `app.py` (exported Flask `app` instance).
+- **Routing:** `vercel.json` uses `@vercel/python` (`builds` + `routes`) to route `/(.*)` directly to `app.py`, preserving original request paths (`/`, `/login`, `/static/...`, etc.).
 - **Dependencies:** `requirements.txt` (`Flask>=3.0.0`, `Werkzeug>=3.0.0`).
 - **SQLite Read-Only Filesystem Handling (`database.py`):**
   - Vercel's `/var/task` deployment directory is **read-only**.
