@@ -3,17 +3,23 @@ import datetime
 import os
 from flask import Flask, render_template, request, redirect, url_for, session, flash, g
 from werkzeug.security import check_password_hash, generate_password_hash
-from database import get_db, init_db, get_db_path
+from database import get_db, init_db, get_db_path, is_postgres
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "timetable-secret-key-mid-semester-project")
 
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+_pg_initialized = False
 
 # Ensure database is initialized before first request
 @app.before_request
 def setup_db():
-    if not os.path.exists(get_db_path()):
+    global _pg_initialized
+    if is_postgres():
+        if not _pg_initialized:
+            init_db()
+            _pg_initialized = True
+    elif not os.path.exists(get_db_path()):
         init_db()
     g.db = get_db()
 
