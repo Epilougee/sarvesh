@@ -154,6 +154,13 @@ export default async function DashboardPage() {
                   <tbody className="divide-y divide-slate-100">
                     {sortedClasses.map((slot: any, idx: number) => {
                       const color = PERIOD_COLORS[(slot.timeslot_id || idx) % PERIOD_COLORS.length];
+                      const ts = Array.isArray(slot.timeslots) ? slot.timeslots[0] : slot.timeslots;
+                      const grp = Array.isArray(slot.groups) ? slot.groups[0] : slot.groups;
+                      const sub = Array.isArray(slot.subjects) ? slot.subjects[0] : slot.subjects;
+                      const fac = Array.isArray(slot.faculty) ? slot.faculty[0] : slot.faculty;
+                      const uName = Array.isArray(fac?.users) ? fac?.users[0]?.name : fac?.users?.name;
+                      const rm = Array.isArray(slot.rooms) ? slot.rooms[0] : slot.rooms;
+
                       return (
                         <tr key={slot.id} className="hover:bg-slate-50/80 transition-colors">
                           <td className="py-3.5 px-4 pl-6 relative">
@@ -165,37 +172,37 @@ export default async function DashboardPage() {
                             />
                             <div className="flex flex-col">
                               <span className="font-semibold text-slate-800">
-                                {slot.timeslots?.label || "Period"}
+                                {ts?.label || "Period"}
                               </span>
                               <span className="text-[11px] text-slate-400 mt-0.5">
-                                {slot.timeslots?.start_time} - {slot.timeslots?.end_time}
+                                {ts?.start_time} - {ts?.end_time}
                               </span>
                             </div>
                           </td>
 
                           <td className="py-3.5 px-4">
                             <span className="inline-block px-2 py-0.5 rounded-full text-[11px] font-semibold bg-[#EBF3FA] text-[#2F5D8A]">
-                              {slot.groups?.name}
+                              {grp?.name}
                             </span>
                           </td>
 
                           <td className="py-3.5 px-4">
                             <span className="font-semibold text-slate-800">
-                              {slot.subjects?.name}
+                              {sub?.name}
                             </span>
                             <span className="ml-1.5 px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 font-mono text-[10px] font-semibold">
-                              {slot.subjects?.code}
+                              {sub?.code}
                             </span>
                           </td>
 
                           <td className="py-3.5 px-4 text-slate-700">
-                            {slot.faculty?.users?.name}
+                            {uName}
                           </td>
 
                           <td className="py-3.5 px-4 text-slate-600">
                             <span className="inline-flex items-center gap-1">
                               <MapPin className="w-3 h-3 text-slate-400" />
-                              {slot.rooms?.name}
+                              {rm?.name}
                             </span>
                           </td>
                         </tr>
