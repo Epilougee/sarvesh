@@ -65,9 +65,11 @@ export default async function DashboardPage() {
     )
     .eq("day", dayName);
 
-  const sortedClasses = (todayClasses || []).sort((a: any, b: any) =>
-    (a.timeslots?.start_time || "").localeCompare(b.timeslots?.start_time || "")
-  );
+  const sortedClasses = (todayClasses || []).sort((a: any, b: any) => {
+    const tsA = Array.isArray(a.timeslots) ? a.timeslots[0] : a.timeslots;
+    const tsB = Array.isArray(b.timeslots) ? b.timeslots[0] : b.timeslots;
+    return (tsA?.start_time || "").localeCompare(tsB?.start_time || "");
+  });
 
   const PERIOD_COLORS = ["#2F5D8A", "#3A9D6E", "#D9822B", "#6B5BB5", "#0E7490", "#BE185D", "#4338CA"];
 
