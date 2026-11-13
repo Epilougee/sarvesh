@@ -194,3 +194,4 @@ export function TimetableViewClient({
     </div>
   );
 }
+

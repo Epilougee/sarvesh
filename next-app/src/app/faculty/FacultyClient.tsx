@@ -302,3 +302,4 @@ export function FacultyClient({ initialFaculty, allSubjects }: FacultyClientProp
     </div>
   );
 }
+

@@ -38,3 +38,4 @@ export function Topbar({ title, institutionType = "college", children }: TopbarP
     </header>
   );
 }
+

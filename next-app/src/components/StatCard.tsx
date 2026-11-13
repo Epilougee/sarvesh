@@ -61,3 +61,4 @@ export function StatCard({ label, value, icon: Icon, variant }: StatCardProps) {
     </div>
   );
 }
+

@@ -37,3 +37,4 @@ export default async function RoomsPage() {
     </div>
   );
 }
+

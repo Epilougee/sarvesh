@@ -119,3 +119,4 @@ export function SettingsClient({ initialType }: { initialType: "college" | "scho
     </div>
   );
 }
+

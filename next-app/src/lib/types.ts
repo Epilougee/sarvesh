@@ -91,3 +91,4 @@ export interface SessionUser {
   email: string;
   role: Role;
 }
+
