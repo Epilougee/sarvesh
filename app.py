@@ -1,7 +1,8 @@
 from functools import wraps
 import datetime
 import os
-from flask import Flask, render_template, request, redirect, url_for, session, flash, g
+import traceback
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g, Response
 from werkzeug.security import check_password_hash, generate_password_hash
 from database import get_db, init_db, get_db_path, is_postgres
 
@@ -10,6 +11,38 @@ app.secret_key = os.environ.get("SECRET_KEY", "timetable-secret-key-mid-semester
 
 DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 _pg_initialized = False
+
+# Friendly diagnostic page for 500 errors on deployment
+@app.errorhandler(500)
+def handle_500(err):
+    original_err = getattr(err, "original_exception", err)
+    tb = traceback.format_exc()
+    html = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Application Error</title>
+      <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0F172A; color: #F8FAFC; padding: 40px 20px; }}
+        .container {{ max-width: 800px; margin: 0 auto; background: #1E293B; border-radius: 12px; padding: 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); border: 1px solid #334155; }}
+        h1 {{ color: #EF4444; font-size: 22px; margin-top: 0; }}
+        p {{ color: #94A3B8; font-size: 14px; line-height: 1.6; }}
+        pre {{ background: #0F172A; color: #FCA5A5; padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; border: 1px solid #334155; }}
+        .btn {{ display: inline-block; background: #2563EB; color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; margin-top: 16px; }}
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>Internal Server Error (Diagnostic Details)</h1>
+        <p><strong>Error:</strong> {original_err}</p>
+        <p><strong>Traceback:</strong></p>
+        <pre>{tb}</pre>
+        <a href="/" class="btn">Try Again</a>
+      </div>
+    </body>
+    </html>
+    """
+    return Response(html, status=500, mimetype="text/html")
 
 # Ensure database is initialized before first request
 @app.before_request

@@ -62,10 +62,12 @@ class PostgresCursorWrapper:
         self.lastrowid = None
 
         match = _INSERT_RE.match(pg_query)
+        # Only append RETURNING id if it's a single INSERT statement (not a multi-statement script)
         wants_id = (
             match is not None
             and match.group(1).lower() in _TABLES_WITH_ID
             and "RETURNING" not in pg_query.upper()
+            and ";" not in pg_query.strip()[:-1]
         )
         if wants_id:
             pg_query = pg_query.rstrip().rstrip(";") + " RETURNING id"
@@ -154,7 +156,13 @@ def init_db():
         conn = get_db()
         cur = conn.cursor()
         with open(schema_path, "r", encoding="utf-8") as f:
-            cur.execute(f.read())
+            raw_sql = f.read()
+
+        # Execute statements individually for PostgreSQL compatibility
+        statements = [stmt.strip() for stmt in raw_sql.split(";") if stmt.strip()]
+        for stmt in statements:
+            cur.execute(stmt)
+
         cur.execute(
             "INSERT INTO settings (key, value) VALUES ('institution_type', 'college') "
             "ON CONFLICT (key) DO NOTHING"
