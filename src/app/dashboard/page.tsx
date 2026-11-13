@@ -25,22 +25,41 @@ export default async function DashboardPage() {
 
   const supabase = getAdminClient();
 
-  // Fetch counts
-  const [{ count: facultyCount }, { count: subjectCount }, { count: groupCount }, { count: roomCount }] =
-    await Promise.all([
+  // Safely fetch counts
+  let facultyCount = 0;
+  let subjectCount = 0;
+  let groupCount = 0;
+  let roomCount = 0;
+
+  try {
+    const [resF, resS, resG, resR] = await Promise.all([
       supabase.from("faculty").select("*", { count: "exact", head: true }),
       supabase.from("subjects").select("*", { count: "exact", head: true }),
       supabase.from("groups").select("*", { count: "exact", head: true }),
       supabase.from("rooms").select("*", { count: "exact", head: true }),
     ]);
+    facultyCount = resF.count ?? 0;
+    subjectCount = resS.count ?? 0;
+    groupCount = resG.count ?? 0;
+    roomCount = resR.count ?? 0;
+  } catch (e) {
+    console.error("Error fetching counts:", e);
+  }
 
-  // Fetch settings
-  const { data: settingData } = await supabase
-    .from("settings")
-    .select("value")
-    .eq("key", "institution_type")
-    .single();
-  const institutionType = (settingData?.value as "college" | "school") || "college";
+  // Safely fetch settings
+  let institutionType: "college" | "school" = "college";
+  try {
+    const { data: settingData } = await supabase
+      .from("settings")
+      .select("value")
+      .eq("key", "institution_type")
+      .maybeSingle();
+    if (settingData?.value === "school") {
+      institutionType = "school";
+    }
+  } catch (e) {
+    console.error("Error fetching settings:", e);
+  }
 
   // Today's classes
   const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -49,23 +68,31 @@ export default async function DashboardPage() {
   const isSunday = dayName === "Sunday";
   if (isSunday) dayName = "Monday";
 
-  const { data: todayClasses } = await supabase
-    .from("timetable")
-    .select(
+  let todayClasses: any[] = [];
+  try {
+    const { data, error } = await supabase
+      .from("timetable")
+      .select(
+        `
+        id,
+        day,
+        timeslot_id,
+        groups:group_id (name),
+        subjects:subject_id (name, code),
+        faculty:faculty_id (users:user_id (name)),
+        rooms:room_id (name),
+        timeslots:timeslot_id (label, start_time, end_time)
       `
-      id,
-      day,
-      timeslot_id,
-      groups:group_id (name),
-      subjects:subject_id (name, code),
-      faculty:faculty_id (users:user_id (name)),
-      rooms:room_id (name),
-      timeslots:timeslot_id (label, start_time, end_time)
-    `
-    )
-    .eq("day", dayName);
+      )
+      .eq("day", dayName);
+    if (!error && data) {
+      todayClasses = data;
+    }
+  } catch (e) {
+    console.error("Error fetching timetable slots:", e);
+  }
 
-  const sortedClasses = (todayClasses || []).sort((a: any, b: any) => {
+  const sortedClasses = [...todayClasses].sort((a: any, b: any) => {
     const tsA = Array.isArray(a.timeslots) ? a.timeslots[0] : a.timeslots;
     const tsB = Array.isArray(b.timeslots) ? b.timeslots[0] : b.timeslots;
     return (tsA?.start_time || "").localeCompare(tsB?.start_time || "");
