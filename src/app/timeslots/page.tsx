@@ -15,7 +15,7 @@ export default async function TimeslotsPage() {
   const supabase = getAdminClient();
   const [{ data: timeslots }, { data: settingData }] = await Promise.all([
     supabase.from("timeslots").select("*").order("start_time"),
-    supabase.from("settings").select("value").eq("key", "institution_type").single(),
+    supabase.from("settings").select("value").eq("key", "institution_type").maybeSingle(),
   ]);
 
   const institutionType = (settingData?.value as "college" | "school") || "college";

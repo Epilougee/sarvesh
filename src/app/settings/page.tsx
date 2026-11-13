@@ -17,7 +17,7 @@ export default async function SettingsPage() {
     .from("settings")
     .select("value")
     .eq("key", "institution_type")
-    .single();
+    .maybeSingle();
 
   const currentType = (settingData?.value as "college" | "school") || "college";
 

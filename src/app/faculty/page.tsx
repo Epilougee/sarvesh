@@ -19,7 +19,7 @@ export default async function FacultyPage() {
       .select("id, department, designation, phone, users:user_id (id, name, email)")
       .order("id"),
     supabase.from("subjects").select("*").order("name"),
-    supabase.from("settings").select("value").eq("key", "institution_type").single(),
+    supabase.from("settings").select("value").eq("key", "institution_type").maybeSingle(),
   ]);
 
   const institutionType = (settingData?.value as "college" | "school") || "college";

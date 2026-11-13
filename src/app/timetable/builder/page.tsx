@@ -25,7 +25,7 @@ export default async function TimetableBuilderPage({
     .from("settings")
     .select("value")
     .eq("key", "institution_type")
-    .single();
+    .maybeSingle();
   const institutionType = (settingData?.value as "college" | "school") || "college";
 
   // 2. Fetch all groups

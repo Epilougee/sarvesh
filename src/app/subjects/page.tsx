@@ -15,7 +15,7 @@ export default async function SubjectsPage() {
   const supabase = getAdminClient();
   const [{ data: subjects }, { data: settingData }] = await Promise.all([
     supabase.from("subjects").select("*").order("name"),
-    supabase.from("settings").select("value").eq("key", "institution_type").single(),
+    supabase.from("settings").select("value").eq("key", "institution_type").maybeSingle(),
   ]);
 
   const institutionType = (settingData?.value as "college" | "school") || "college";

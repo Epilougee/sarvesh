@@ -19,7 +19,7 @@ export default async function MyTimetablePage() {
     .from("settings")
     .select("value")
     .eq("key", "institution_type")
-    .single();
+    .maybeSingle();
   const institutionType = (settingData?.value as "college" | "school") || "college";
 
   // 2. Resolve faculty ID for current user
@@ -29,7 +29,7 @@ export default async function MyTimetablePage() {
       .from("faculty")
       .select("id")
       .eq("user_id", session.id)
-      .single();
+      .maybeSingle();
     facultyId = fac?.id || null;
   }
 
@@ -61,7 +61,7 @@ export default async function MyTimetablePage() {
     `
     )
     .eq("id", facultyId)
-    .single();
+    .maybeSingle();
 
   // 4. Fetch timeslots
   const { data: timeslots } = await supabase.from("timeslots").select("*").order("start_time");

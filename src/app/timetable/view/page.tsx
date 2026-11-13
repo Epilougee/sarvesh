@@ -26,7 +26,7 @@ export default async function TimetableViewPage({
     .from("settings")
     .select("value")
     .eq("key", "institution_type")
-    .single();
+    .maybeSingle();
   const institutionType = (settingData?.value as "college" | "school") || "college";
 
   // Fetch groups, faculty, rooms, timeslots

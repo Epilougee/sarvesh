@@ -15,7 +15,7 @@ export default async function GroupsPage() {
   const supabase = getAdminClient();
   const [{ data: groups }, { data: settingData }] = await Promise.all([
     supabase.from("groups").select("*").order("name"),
-    supabase.from("settings").select("value").eq("key", "institution_type").single(),
+    supabase.from("settings").select("value").eq("key", "institution_type").maybeSingle(),
   ]);
 
   const institutionType = (settingData?.value as "college" | "school") || "college";
