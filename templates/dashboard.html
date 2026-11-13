@@ -13,7 +13,7 @@
 {% block content %}
 <!-- 4 Stat Cards -->
 <div class="stats-grid">
-  <div class="stat-card">
+  <div class="stat-card stat-card-faculty">
     <div class="stat-icon blue">
       <i class="fa-solid fa-user-tie"></i>
     </div>
@@ -23,7 +23,7 @@
     </div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card stat-card-subjects">
     <div class="stat-icon amber">
       <i class="fa-solid fa-book-open"></i>
     </div>
@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <div class="stat-card">
+  <div class="stat-card stat-card-cohorts">
     <div class="stat-icon green">
       <i class="fa-solid fa-users"></i>
     </div>
@@ -43,8 +43,8 @@
     </div>
   </div>
 
-  <div class="stat-card">
-    <div class="stat-icon slate">
+  <div class="stat-card stat-card-rooms">
+    <div class="stat-icon violet">
       <i class="fa-solid fa-door-open"></i>
     </div>
     <div class="stat-info">
@@ -90,10 +90,13 @@
         </thead>
         <tbody>
           {% for slot in today_classes %}
-            <tr>
-              <td>
-                <strong>{{ slot.period_label }}</strong>
-                <div class="form-helper">{{ slot.start_time }} - {{ slot.end_time }}</div>
+            <tr class="period-row" style="--period-color: {{ ['#2F5D8A', '#3A9D6E', '#D9822B', '#6B5BB5', '#0E7490', '#BE185D', '#4338CA'][(slot.timeslot_id|default(loop.index0)) % 7] }};">
+              <td class="period-time-cell">
+                <span class="period-bar" aria-hidden="true"></span>
+                <div class="period-time-content">
+                  <strong>{{ slot.period_label }}</strong>
+                  <div class="form-helper">{{ slot.start_time }} - {{ slot.end_time }}</div>
+                </div>
               </td>
               <td>
                 <span class="badge-tag">{{ slot.group_name }}</span>
