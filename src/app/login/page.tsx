@@ -44,8 +44,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F7FA] flex items-center justify-center p-4">
-      <div className="w-full max-w-[420px] bg-white border border-slate-200 rounded-xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)]">
+    <div className="min-h-screen login-bg flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Decorative ambient glowing orbs */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#2F5D8A]/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-[#6B5BB5]/15 rounded-full blur-3xl pointer-events-none" />
+
+      <div className="w-full max-w-[420px] bg-white/95 backdrop-blur-md border border-slate-200/80 rounded-2xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.25)] relative z-10">
         {/* Brand Header */}
         <div className="text-center mb-6">
           <div className="w-12 h-12 rounded-xl bg-[#2F5D8A] text-white mx-auto flex items-center justify-center shadow-md mb-3">

@@ -2,7 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { DAYS_OF_WEEK, Group, Room, Timeslot } from "@/lib/types";
-import { Users, UserCheck, DoorOpen, Printer } from "lucide-react";
+import { Users, UserCheck, DoorOpen, Download, Printer } from "lucide-react";
+import { exportTimetableToPDF } from "@/lib/pdfExport";
 
 interface TimetableViewClientProps {
   institutionType: "college" | "school";
@@ -40,6 +41,26 @@ export function TimetableViewClient({
   };
 
   const groupLabel = institutionType === "school" ? "Class" : "Cohort";
+
+  // Find active entity label
+  let activeName = "";
+  if (viewType === "group") {
+    activeName = groups.find((g) => g.id === targetId)?.name || "Cohort";
+  } else if (viewType === "faculty") {
+    activeName = faculty.find((f) => f.id === targetId)?.name || "Faculty";
+  } else if (viewType === "room") {
+    activeName = rooms.find((r) => r.id === targetId)?.name || "Room";
+  }
+
+  const handleExportPDF = () => {
+    exportTimetableToPDF({
+      title: `${activeName} - Weekly Timetable`,
+      subtitle: `${institutionType.toUpperCase()} SCHEDULE  |  View: By ${viewType.toUpperCase()}`,
+      timeslots,
+      matrix,
+      filename: `${activeName.replace(/[^a-zA-Z0-9_-]/g, "_")}_timetable.pdf`,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -82,7 +103,7 @@ export function TimetableViewClient({
           </button>
         </div>
 
-        {/* Dropdown Selector */}
+        {/* Dropdown Selector & PDF Download */}
         <div className="flex items-center gap-3">
           <select
             value={targetId}
@@ -110,11 +131,19 @@ export function TimetableViewClient({
           </select>
 
           <button
+            onClick={handleExportPDF}
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-md bg-[#2F5D8A] text-white text-xs font-semibold hover:bg-[#244A70] transition-all shadow-sm cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Download PDF</span>
+          </button>
+
+          <button
             onClick={() => window.print()}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
           >
             <Printer className="w-3.5 h-3.5 text-slate-500" />
-            <span>Print View</span>
+            <span>Print</span>
           </button>
         </div>
       </div>
