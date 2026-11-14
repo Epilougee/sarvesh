@@ -22,7 +22,7 @@ export default async function SettingsPage() {
   const currentType = (settingData?.value as "college" | "school") || "college";
 
   return (
-    <div className="flex min-h-screen bg-[#F5F7FA]">
+    <div className="flex min-h-screen app-bg">
       <Sidebar user={session} institutionType={currentType} />
 
       <div className="ml-[240px] flex-1 flex flex-col min-w-0">

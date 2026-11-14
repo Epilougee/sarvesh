@@ -99,7 +99,7 @@ export default async function TimetableViewPage({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F5F7FA]">
+    <div className="flex min-h-screen app-bg">
       <Sidebar user={session} institutionType={institutionType} />
 
       <div className="ml-[240px] flex-1 flex flex-col min-w-0">

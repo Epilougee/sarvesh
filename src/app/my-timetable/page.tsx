@@ -37,7 +37,7 @@ export default async function MyTimetablePage() {
   if (!facultyId) {
     // Admin viewing faculty portal without linked profile
     return (
-      <div className="flex min-h-screen bg-[#F5F7FA]">
+      <div className="flex min-h-screen app-bg">
         <Sidebar user={session} institutionType={institutionType} />
         <div className="ml-[240px] flex-1 p-7">
           <Topbar title="My Timetable" institutionType={institutionType} />
@@ -103,7 +103,7 @@ export default async function MyTimetablePage() {
   const fData = facultyProfile as any;
 
   return (
-    <div className="flex min-h-screen bg-[#F5F7FA]">
+    <div className="flex min-h-screen app-bg">
       <Sidebar user={session} institutionType={institutionType} />
 
       <div className="ml-[240px] flex-1 flex flex-col min-w-0">

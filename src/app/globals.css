@@ -6,24 +6,25 @@ body {
   background-color: #F8FAFC;
 }
 
-/* Elegant atmospheric background with subtle mesh gradient & delicate micro-dot grid */
+/* Elegant atmospheric background: silky aurora mesh gradient with soft ambient waves (no dots) */
 .app-bg {
   background-color: #F8FAFC;
-  background-image: 
-    radial-gradient(circle at 10% 20%, rgba(47, 93, 138, 0.05) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(58, 157, 110, 0.04) 0%, transparent 45%),
-    radial-gradient(circle at 50% 50%, rgba(224, 142, 69, 0.03) 0%, transparent 50%),
-    radial-gradient(#CBD5E1 0.75px, transparent 0.75px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 24px 24px;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(47, 93, 138, 0.12), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 85% 15%, rgba(107, 91, 181, 0.08), transparent 55%),
+    radial-gradient(ellipse 70% 60% at 10% 85%, rgba(58, 157, 110, 0.08), transparent 60%),
+    radial-gradient(ellipse 65% 55% at 90% 80%, rgba(224, 142, 69, 0.07), transparent 60%),
+    linear-gradient(180deg, #F8FAFC 0%, #EEF2F6 100%);
+  background-attachment: fixed;
 }
 
-/* Darker ambient background for auth / login page */
+/* Rich aurora glow for Login screen (no dots) */
 .login-bg {
-  background-color: #0F172A;
-  background-image: 
-    radial-gradient(circle at 15% 15%, rgba(47, 93, 138, 0.25) 0%, transparent 50%),
-    radial-gradient(circle at 85% 85%, rgba(107, 91, 181, 0.18) 0%, transparent 50%),
-    radial-gradient(circle at 50% 10%, rgba(58, 157, 110, 0.12) 0%, transparent 40%),
-    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+  background-color: #0B132B;
+  background-image:
+    radial-gradient(ellipse 90% 60% at 15% 10%, rgba(47, 93, 138, 0.40), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 85% 20%, rgba(107, 91, 181, 0.35), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 90%, rgba(58, 157, 110, 0.25), transparent 65%),
+    linear-gradient(180deg, #0B132B 0%, #070D1F 100%);
+  background-attachment: fixed;
 }
