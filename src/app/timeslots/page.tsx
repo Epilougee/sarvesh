@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
+import { sortTimeslots } from "@/lib/types";
 import { MasterRecordsClient } from "../subjects/MasterRecordsClient";
 
 export default async function TimeslotsPage() {
@@ -13,12 +14,13 @@ export default async function TimeslotsPage() {
   if (session.role !== "admin") redirect("/my-timetable");
 
   const supabase = getAdminClient();
-  const [{ data: timeslots }, { data: settingData }] = await Promise.all([
-    supabase.from("timeslots").select("*").order("start_time"),
+  const [{ data: timeslotsRaw }, { data: settingData }] = await Promise.all([
+    supabase.from("timeslots").select("*").order("id"),
     supabase.from("settings").select("value").eq("key", "institution_type").maybeSingle(),
   ]);
 
   const institutionType = (settingData?.value as "college" | "school") || "college";
+  const timeslots = sortTimeslots(timeslotsRaw || []);
 
   return (
     <div className="flex min-h-screen app-bg">
@@ -28,7 +30,7 @@ export default async function TimeslotsPage() {
         <main className="p-7">
           <MasterRecordsClient
             entityType="timeslot"
-            initialItems={timeslots || []}
+            initialItems={timeslots}
             title="Periods & Timeslots"
             singularTitle="Timeslot"
           />
@@ -37,4 +39,3 @@ export default async function TimeslotsPage() {
     </div>
   );
 }
-

@@ -92,3 +92,38 @@ export interface SessionUser {
   role: Role;
 }
 
+export type AttendanceStatus = "present" | "absent" | "on_leave" | "late";
+
+export interface FacultyAttendance {
+  id: string | number;
+  faculty_id: number;
+  date: string; // YYYY-MM-DD
+  status: AttendanceStatus;
+  check_in_time?: string;
+  remarks?: string;
+  faculty_name?: string;
+  department?: string;
+  designation?: string;
+}
+
+export function formatTimeDisplay(timeStr: string): string {
+  if (!timeStr) return "";
+  const parts = timeStr.split(":");
+  const h = parseInt(parts[0], 10);
+  if (isNaN(h)) return timeStr;
+  const suffix = h >= 12 ? "PM" : "AM";
+  const h12 = h % 12 || 12;
+  return `${String(h12).padStart(2, "0")}:${parts[1] || "00"} ${suffix}`;
+}
+
+export function sortTimeslots<T extends { label?: string; start_time?: string; id?: number }>(
+  slots: T[]
+): T[] {
+  return [...slots].sort((a, b) => {
+    const numA = parseInt((a.label || "").replace(/\D/g, ""), 10);
+    const numB = parseInt((b.label || "").replace(/\D/g, ""), 10);
+    if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+    return (a.start_time || "").localeCompare(b.start_time || "");
+  });
+}
+

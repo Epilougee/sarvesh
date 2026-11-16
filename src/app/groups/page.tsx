@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
+import { filterGroupsByMode } from "@/lib/modeFilter";
 import { MasterRecordsClient } from "../subjects/MasterRecordsClient";
 
 export default async function GroupsPage() {
@@ -13,7 +14,7 @@ export default async function GroupsPage() {
   if (session.role !== "admin") redirect("/my-timetable");
 
   const supabase = getAdminClient();
-  const [{ data: groups }, { data: settingData }] = await Promise.all([
+  const [{ data: groupsRaw }, { data: settingData }] = await Promise.all([
     supabase.from("groups").select("*").order("name"),
     supabase.from("settings").select("value").eq("key", "institution_type").maybeSingle(),
   ]);
@@ -21,6 +22,7 @@ export default async function GroupsPage() {
   const institutionType = (settingData?.value as "college" | "school") || "college";
   const title = institutionType === "school" ? "Classes & Sections" : "Cohorts & Divisions";
   const singular = institutionType === "school" ? "Class" : "Cohort";
+  const filteredGroups = filterGroupsByMode(groupsRaw || [], institutionType);
 
   return (
     <div className="flex min-h-screen app-bg">
@@ -30,7 +32,7 @@ export default async function GroupsPage() {
         <main className="p-7">
           <MasterRecordsClient
             entityType="group"
-            initialItems={groups || []}
+            initialItems={filteredGroups}
             title={title}
             singularTitle={singular}
           />
@@ -39,4 +41,3 @@ export default async function GroupsPage() {
     </div>
   );
 }
-

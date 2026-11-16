@@ -5,7 +5,8 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
-import { DAYS_OF_WEEK } from "@/lib/types";
+import { DAYS_OF_WEEK, sortTimeslots } from "@/lib/types";
+import { filterGroupsByMode, filterSubjectsByMode } from "@/lib/modeFilter";
 import { TimetableBuilderClient } from "./TimetableBuilderClient";
 
 export default async function TimetableBuilderPage({
@@ -28,18 +29,18 @@ export default async function TimetableBuilderPage({
     .maybeSingle();
   const institutionType = (settingData?.value as "college" | "school") || "college";
 
-  // 2. Fetch all groups
-  const { data: groups } = await supabase.from("groups").select("*").order("name");
-  const allGroups = groups || [];
+  // 2. Fetch all groups and filter by mode
+  const { data: groupsRaw } = await supabase.from("groups").select("*").order("name");
+  const allGroups = filterGroupsByMode(groupsRaw || [], institutionType);
 
   const selectedGroupId = params.group_id
     ? parseInt(params.group_id, 10)
     : allGroups[0]?.id || 0;
 
   // 3. Fetch timeslots, subjects, faculty, rooms
-  const [{ data: timeslots }, { data: subjects }, { data: facultyRaw }, { data: rooms }] =
+  const [{ data: timeslotsRaw }, { data: subjectsRaw }, { data: facultyRaw }, { data: rooms }] =
     await Promise.all([
-      supabase.from("timeslots").select("*").order("start_time"),
+      supabase.from("timeslots").select("*").order("id"),
       supabase.from("subjects").select("*").order("name"),
       supabase
         .from("faculty")
@@ -47,6 +48,12 @@ export default async function TimetableBuilderPage({
         .order("id"),
       supabase.from("rooms").select("*").order("name"),
     ]);
+
+  // Order timeslots: Period 1, Period 2, Period 3...
+  const timeslots = sortTimeslots(timeslotsRaw || []);
+
+  // Filter subjects by mode
+  const allSubjects = filterSubjectsByMode(subjectsRaw || [], institutionType);
 
   const allFaculty = (facultyRaw || []).map((f: any) => ({
     id: f.id,
@@ -107,8 +114,8 @@ export default async function TimetableBuilderPage({
             institutionType={institutionType}
             allGroups={allGroups}
             selectedGroupId={selectedGroupId}
-            timeslots={timeslots || []}
-            allSubjects={subjects || []}
+            timeslots={timeslots}
+            allSubjects={allSubjects}
             allFaculty={allFaculty}
             allRooms={rooms || []}
             matrix={matrix}
@@ -118,4 +125,3 @@ export default async function TimetableBuilderPage({
     </div>
   );
 }
-

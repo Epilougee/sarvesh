@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { DAYS_OF_WEEK, DayOfWeek, Group, Subject, Room, Timeslot } from "@/lib/types";
+import { DAYS_OF_WEEK, DayOfWeek, Group, Subject, Room, Timeslot, formatTimeDisplay } from "@/lib/types";
 import { Plus, Trash2, AlertCircle, X, Users, MapPin, UserCheck, BookOpen } from "lucide-react";
 
 interface FacultyItem {
@@ -150,9 +150,9 @@ export function TimetableBuilderClient({
                 <th className="py-3 px-4 w-[110px] border-r border-slate-200">Day</th>
                 {timeslots.map((ts) => (
                   <th key={ts.id} className="py-3 px-3 text-center border-r border-slate-200 last:border-r-0">
-                    <div>{ts.label}</div>
-                    <div className="text-[10px] font-normal text-slate-400">
-                      {ts.start_time} - {ts.end_time}
+                    <div className="font-bold text-slate-800">{ts.label}</div>
+                    <div className="text-[10px] font-normal text-slate-500 mt-0.5">
+                      {formatTimeDisplay(ts.start_time)} - {formatTimeDisplay(ts.end_time)}
                     </div>
                   </th>
                 ))}

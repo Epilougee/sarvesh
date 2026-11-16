@@ -5,7 +5,8 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
-import { DAYS_OF_WEEK } from "@/lib/types";
+import { DAYS_OF_WEEK, sortTimeslots } from "@/lib/types";
+import { filterGroupsByMode } from "@/lib/modeFilter";
 import { TimetableViewClient } from "./TimetableViewClient";
 
 export default async function TimetableViewPage({
@@ -30,13 +31,16 @@ export default async function TimetableViewPage({
   const institutionType = (settingData?.value as "college" | "school") || "college";
 
   // Fetch groups, faculty, rooms, timeslots
-  const [{ data: groups }, { data: facultyRaw }, { data: rooms }, { data: timeslots }] =
+  const [{ data: groupsRaw }, { data: facultyRaw }, { data: rooms }, { data: timeslotsRaw }] =
     await Promise.all([
       supabase.from("groups").select("*").order("name"),
       supabase.from("faculty").select("id, department, designation, users:user_id (name)").order("id"),
       supabase.from("rooms").select("*").order("name"),
-      supabase.from("timeslots").select("*").order("start_time"),
+      supabase.from("timeslots").select("*").order("id"),
     ]);
+
+  const groups = filterGroupsByMode(groupsRaw || [], institutionType);
+  const timeslots = sortTimeslots(timeslotsRaw || []);
 
   const allFaculty = (facultyRaw || []).map((f: any) => ({
     id: f.id,
@@ -68,32 +72,34 @@ export default async function TimetableViewPage({
     `
   );
 
-  if (viewType === "group") query = query.eq("group_id", targetId);
-  if (viewType === "faculty") query = query.eq("faculty_id", targetId);
-  if (viewType === "room") query = query.eq("room_id", targetId);
+  if (viewType === "group" && targetId) query = query.eq("group_id", targetId);
+  if (viewType === "faculty" && targetId) query = query.eq("faculty_id", targetId);
+  if (viewType === "room" && targetId) query = query.eq("room_id", targetId);
 
-  const { data: entries } = await query;
+  const { data: timetableEntries } = await query;
 
+  // Format into matrix: [day][timeslot_id]
   const matrix: Record<string, Record<number, any>> = {};
   for (const day of DAYS_OF_WEEK) {
     matrix[day] = {};
   }
-  for (const item of (entries || []) as any[]) {
+  const getObj = (x: any) => (Array.isArray(x) ? x[0] : x);
+
+  for (const item of (timetableEntries as any[]) || []) {
     if (matrix[item.day]) {
-      const gName = Array.isArray(item.groups) ? item.groups[0]?.name : item.groups?.name;
-      const sName = Array.isArray(item.subjects) ? item.subjects[0]?.name : item.subjects?.name;
-      const sCode = Array.isArray(item.subjects) ? item.subjects[0]?.code : item.subjects?.code;
-      const fItem = Array.isArray(item.faculty) ? item.faculty[0] : item.faculty;
-      const uName = Array.isArray(fItem?.users) ? fItem?.users[0]?.name : fItem?.users?.name;
-      const rName = Array.isArray(item.rooms) ? item.rooms[0]?.name : item.rooms?.name;
+      const grp = getObj(item.groups);
+      const sub = getObj(item.subjects);
+      const fac = getObj(item.faculty);
+      const uObj = getObj(fac?.users);
+      const rm = getObj(item.rooms);
 
       matrix[item.day][item.timeslot_id] = {
         id: item.id,
-        group_name: gName,
-        subject_name: sName,
-        subject_code: sCode,
-        faculty_name: uName,
-        room_name: rName,
+        group_name: grp?.name,
+        subject_name: sub?.name,
+        subject_code: sub?.code,
+        faculty_name: uObj?.name,
+        room_name: rm?.name,
       };
     }
   }
@@ -103,7 +109,7 @@ export default async function TimetableViewPage({
       <Sidebar user={session} institutionType={institutionType} />
 
       <div className="ml-[240px] flex-1 flex flex-col min-w-0">
-        <Topbar title="Institution Timetables" institutionType={institutionType} />
+        <Topbar title="Weekly Timetables" institutionType={institutionType} />
 
         <main className="p-7">
           <TimetableViewClient

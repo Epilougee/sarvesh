@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminClient } from "@/lib/supabase";
 import { getSession } from "@/lib/auth";
+import { sortTimeslots } from "@/lib/types";
 
 export async function GET() {
   const supabase = getAdminClient();
-  const { data, error } = await supabase.from("timeslots").select("*").order("start_time");
+  const { data, error } = await supabase.from("timeslots").select("*").order("id");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ timeslots: data });
+  return NextResponse.json({ timeslots: sortTimeslots(data || []) });
 }
 
 export async function POST(req: NextRequest) {

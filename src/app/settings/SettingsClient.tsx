@@ -66,7 +66,7 @@ export function SettingsClient({ initialType }: { initialType: "college" | "scho
           <div>
             <div className="font-bold text-slate-800 text-sm">College / University Mode</div>
             <p className="text-xs text-slate-500 mt-1">
-              Uses <em>Cohorts & Divisions</em> (e.g. B.Tech CSE Sem 5 A) and professorial designations.
+              Loads university cohorts and batches (e.g. B.Tech CSE Sem 5 A, BCA Sem 3) and semester course modules.
             </p>
           </div>
         </div>
@@ -91,9 +91,9 @@ export function SettingsClient({ initialType }: { initialType: "college" | "scho
             )}
           </div>
           <div>
-            <div className="font-bold text-slate-800 text-sm">School Mode</div>
+            <div className="font-bold text-slate-800 text-sm">School Mode (Classes 1 - 12)</div>
             <p className="text-xs text-slate-500 mt-1">
-              Uses <em>Classes & Sections</em> (e.g. Grade 9-A) and period-based school terminology.
+              Loads standard K-12 school classes (Class 1 to Class 12) and school curriculum (Math, Science, Physics, Chemistry, etc.).
             </p>
           </div>
         </div>

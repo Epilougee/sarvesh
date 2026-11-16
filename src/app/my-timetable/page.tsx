@@ -5,7 +5,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
-import { DAYS_OF_WEEK } from "@/lib/types";
+import { DAYS_OF_WEEK, sortTimeslots } from "@/lib/types";
 import { BookOpenCheck, Clock } from "lucide-react";
 import { MyTimetableGrid } from "./MyTimetableGrid";
 
@@ -65,7 +65,8 @@ export default async function MyTimetablePage() {
     .maybeSingle();
 
   // 4. Fetch timeslots
-  const { data: timeslots } = await supabase.from("timeslots").select("*").order("start_time");
+  const { data: timeslotsRaw } = await supabase.from("timeslots").select("*").order("id");
+  const timeslots = sortTimeslots(timeslotsRaw || []);
 
   // 5. Fetch allocated classes for this faculty
   const { data: schedule } = await supabase

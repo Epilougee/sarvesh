@@ -5,6 +5,7 @@ import { getSession } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { Sidebar } from "@/components/Sidebar";
 import { Topbar } from "@/components/Topbar";
+import { filterSubjectsByMode } from "@/lib/modeFilter";
 import { MasterRecordsClient } from "./MasterRecordsClient";
 
 export default async function SubjectsPage() {
@@ -13,12 +14,13 @@ export default async function SubjectsPage() {
   if (session.role !== "admin") redirect("/my-timetable");
 
   const supabase = getAdminClient();
-  const [{ data: subjects }, { data: settingData }] = await Promise.all([
+  const [{ data: subjectsRaw }, { data: settingData }] = await Promise.all([
     supabase.from("subjects").select("*").order("name"),
     supabase.from("settings").select("value").eq("key", "institution_type").maybeSingle(),
   ]);
 
   const institutionType = (settingData?.value as "college" | "school") || "college";
+  const filteredSubjects = filterSubjectsByMode(subjectsRaw || [], institutionType);
 
   return (
     <div className="flex min-h-screen app-bg">
@@ -28,7 +30,7 @@ export default async function SubjectsPage() {
         <main className="p-7">
           <MasterRecordsClient
             entityType="subject"
-            initialItems={subjects || []}
+            initialItems={filteredSubjects}
             title="Subjects"
             singularTitle="Subject"
           />
@@ -37,4 +39,3 @@ export default async function SubjectsPage() {
     </div>
   );
 }
-

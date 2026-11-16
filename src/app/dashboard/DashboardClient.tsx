@@ -12,6 +12,7 @@ import {
   Users,
   DoorOpen,
   CalendarDays,
+  CalendarCheck,
   Plus,
   TableCellsSplit,
   MapPin,
@@ -151,6 +152,37 @@ export default function DashboardClient() {
               variant="rooms"
             />
           </div>
+
+          {/* Quick Faculty Attendance Banner */}
+          {counts.attendanceTotal > 0 && (
+            <Link
+              href="/attendance"
+              className="block bg-white/95 border border-slate-200/90 rounded-xl p-4 shadow-xs hover:border-[#2F5D8A] hover:shadow-sm transition-all group"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                    <CalendarCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold text-slate-800 flex items-center gap-2">
+                      <span>Faculty Attendance Today</span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        {counts.attendancePresent} / {counts.attendanceTotal} Present
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Daily roll call active. Click to view roster, record late arrivals, or mark leaves.
+                    </p>
+                  </div>
+                </div>
+
+                <span className="text-xs font-semibold text-[#2F5D8A] group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+                  Manage Attendance →
+                </span>
+              </div>
+            </Link>
+          )}
 
           {/* Interactive Visual Graphs */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

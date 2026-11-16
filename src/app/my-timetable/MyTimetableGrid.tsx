@@ -1,6 +1,6 @@
 "use client";
 
-import { DAYS_OF_WEEK } from "@/lib/types";
+import { DAYS_OF_WEEK, formatTimeDisplay } from "@/lib/types";
 import { Download, CalendarDays } from "lucide-react";
 import { exportTimetableToPDF } from "@/lib/pdfExport";
 
@@ -51,9 +51,9 @@ export function MyTimetableGrid({
               <th className="py-3 px-4 w-[110px] border-r border-slate-200">Day</th>
               {(timeslots || []).map((ts) => (
                 <th key={ts.id} className="py-3 px-3 text-center border-r border-slate-200 last:border-r-0">
-                  <div>{ts.label}</div>
-                  <div className="text-[10px] font-normal text-slate-400">
-                    {ts.start_time} - {ts.end_time}
+                  <div className="font-bold text-slate-800">{ts.label}</div>
+                  <div className="text-[10px] font-normal text-slate-500 mt-0.5">
+                    {formatTimeDisplay(ts.start_time)} - {formatTimeDisplay(ts.end_time)}
                   </div>
                 </th>
               ))}

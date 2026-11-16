@@ -14,6 +14,7 @@ import {
   Clock,
   Sliders,
   CalendarDays,
+  CalendarCheck,
   LogOut,
   GraduationCap,
 } from "lucide-react";
@@ -99,6 +100,17 @@ export function Sidebar({ user, institutionType }: SidebarProps) {
               Academic Records
             </div>
             <Link
+              href="/attendance"
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all ${
+                pathname.startsWith("/attendance")
+                  ? "bg-[#2F5D8A] text-white shadow-sm font-semibold"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <CalendarCheck className="w-4 h-4 text-[#8BA3BC]" />
+              <span>Faculty Attendance</span>
+            </Link>
+            <Link
               href="/faculty"
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all ${
                 pathname.startsWith("/faculty")
@@ -174,6 +186,17 @@ export function Sidebar({ user, institutionType }: SidebarProps) {
             <div className="text-[10px] font-semibold text-[#7D93AA] uppercase tracking-wider px-3 pt-3 pb-1">
               Faculty Portal
             </div>
+            <Link
+              href="/my-attendance"
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all ${
+                pathname === "/my-attendance"
+                  ? "bg-[#2F5D8A] text-white shadow-sm font-semibold"
+                  : "text-slate-300 hover:bg-white/10 hover:text-white"
+              }`}
+            >
+              <CalendarCheck className="w-4 h-4 text-[#8BA3BC]" />
+              <span>My Attendance</span>
+            </Link>
             <Link
               href="/my-timetable"
               className={`flex items-center gap-3 px-3 py-2 rounded-md text-xs font-medium transition-all ${
