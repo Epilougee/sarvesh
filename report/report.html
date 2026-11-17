@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduSchedule — Mini Project Report</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #e2e8f0;
+      font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      font-size: 11pt;
+      line-height: 1.45;
+      color: #1e293b;
+    }
+
+    .page {
+      width: 210mm;
+      height: 297mm;
+      max-height: 297mm;
+      min-height: 297mm;
+      margin: 20px auto;
+      background: #ffffff;
+      padding: 20mm 22mm 18mm 22mm;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    @media print {
+      body {
+        background: none;
+      }
+      .page {
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+    }
+
+    /* Typography & Headers */
+    h1.page-title {
+      font-size: 16pt;
+      font-weight: 700;
+      color: #2F5D8A;
+      margin: 0 0 4px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .title-rule {
+      height: 1.5px;
+      background: #2F5D8A;
+      width: 100%;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: 12.5pt;
+      font-weight: 700;
+      color: #2F5D8A;
+      margin: 12px 0 6px 0;
+    }
+
+    h3 {
+      font-size: 11pt;
+      font-weight: 600;
+      color: #334155;
+      margin: 10px 0 4px 0;
+    }
+
+    p {
+      margin: 0 0 8px 0;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin: 4px 0 10px 18px;
+      padding: 0;
+    }
+
+    li {
+      margin-bottom: 4px;
+    }
+
+    /* Page Footer */
+    .page-footer {
+      position: absolute;
+      bottom: 12mm;
+      left: 22mm;
+      right: 22mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #cbd5e1;
+      padding-top: 6px;
+      font-size: 9pt;
+      color: #64748b;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 12px 0;
+      font-size: 9.5pt;
+    }
+
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 5px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: #1e293b;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    /* Screenshot Grid */
+    .screenshot-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .screenshot-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screenshot-img {
+      width: 100%;
+      height: 82mm;
+      object-fit: cover;
+      object-position: top;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      background: #f8fafc;
+    }
+
+    .screenshot-caption {
+      font-size: 8.5pt;
+      font-style: italic;
+      color: #334155;
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    .screenshot-caption strong {
+      font-style: normal;
+      color: #2F5D8A;
+    }
+
+    /* Code block */
+    pre.code-snippet {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 3px solid #2F5D8A;
+      padding: 8px 10px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 8.5pt;
+      line-height: 1.35;
+      margin: 8px 0;
+      border-radius: 2px;
+      overflow: hidden;
+      color: #0f172a;
+    }
+
+    /* Callout */
+    .worked-example-box {
+      background: #f0f7ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin: 8px 0;
+      font-size: 9.5pt;
+    }
+
+    .worked-example-box strong {
+      color: #1e40af;
+    }
+
+    /* Cover Page Specific */
+    .cover-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      padding: 10mm 5mm;
+    }
+
+    .cover-top h2 {
+      font-size: 13pt;
+      color: #475569;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .cover-top h1 {
+      font-size: 22pt;
+      color: #2F5D8A;
+      font-weight: 800;
+      line-height: 1.25;
+      margin: 16px 0 8px 0;
+      text-transform: uppercase;
+    }
+
+    .cover-top .subtitle {
+      font-size: 13pt;
+      color: #64748b;
+      font-weight: 500;
+      margin-top: 6px;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      margin: 25px auto;
+      padding: 6px 18px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      font-size: 11pt;
+      font-weight: 600;
+      color: #2F5D8A;
+      letter-spacing: 0.5px;
+    }
+
+    .cover-mid {
+      margin: 15px 0;
+    }
+
+    .cover-mid p {
+      text-align: center;
+      margin: 4px 0;
+      font-size: 11pt;
+      color: #334155;
+    }
+
+    .cover-bottom {
+      border-top: 1.5px solid #2F5D8A;
+      padding-top: 15px;
+      font-size: 11pt;
+      color: #1e293b;
+    }
+
+    .cover-bottom p {
+      text-align: center;
+      margin: 3px 0;
+    }
+
+    /* Signatures */
+    .sig-table {
+      width: 100%;
+      border: none;
+      margin-top: 35px;
+    }
+    .sig-table td {
+      border: none;
+      background: none !important;
+      text-align: center;
+      padding: 0 15px;
+    }
+    .sig-line {
+      border-top: 1px solid #475569;
+      margin-top: 45px;
+      padding-top: 5px;
+      font-weight: 600;
+      font-size: 10pt;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================
+       PAGE 1: COVER PAGE
+       ======================================================== -->
+  <div class="page">
+    <div class="cover-container">
+      <div class="cover-top">
+        <h2>Ajeenkya DY Patil University, Pune</h2>
+        <p style="text-align: center; color: #64748b; font-size: 10.5pt; margin-top: -4px;">School of Information Technology</p>
+        
+        <div style="height: 18px;"></div>
+        <h1>EduSchedule</h1>
+        <div class="subtitle">Academic Faculty &amp; Timetable Management System</div>
+        <div class="cover-badge">MINI PROJECT REPORT</div>
+      </div>
+
+      <div class="cover-mid">
+        <p>Submitted in partial fulfillment of the requirements for the degree of</p>
+        <p style="font-weight: 700; font-size: 12pt; color: #1e293b; margin-top: 6px;">Bachelor of Computer Applications (BCA)</p>
+        <p style="font-size: 11pt; color: #475569;">Specialization in Artificial Intelligence &amp; Data Science</p>
+        
+        <div style="margin: 22px 0;">
+          <table style="width: 75%; margin: 0 auto; border: none;">
+            <tr style="background: none;">
+              <td style="border: none; text-align: right; width: 45%; font-weight: 600; color: #475569;">Submitted by:</td>
+              <td style="border: none; text-align: left; font-weight: 700; color: #1e293b;">Swapnil Sahu</td>
+            </tr>
+            <tr style="background: none;">
+              <td style="border: none; text-align: right; font-weight: 600; color: #475569;">PRN / Roll No:</td>
+              <td style="border: none; text-align: left; font-weight: 600; color: #1e293b;">ADYPU2024BCA042</td>
+            </tr>
+            <tr style="background: none;">
+              <td style="border: none; text-align: right; font-weight: 600; color: #475569;">Project Guide:</td>
+              <td style="border: none; text-align: left; font-weight: 600; color: #1e293b;">Prof. Sachin Deshmukh</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <div class="cover-bottom">
+        <p style="font-weight: 700; color: #2F5D8A; font-size: 11.5pt;">Department of Computer Applications</p>
+        <p>Ajeenkya DY Patil University, Charholi Budruk, Pune, Maharashtra 412105</p>
+        <p style="font-weight: 600; margin-top: 6px;">Semester IV — Academic Year 2026–2027</p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 2: CERTIFICATE & ACKNOWLEDGEMENT
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Certificate of Completion</h1>
+    <div class="title-rule"></div>
+
+    <p style="margin-top: 14px;">
+      This is to certify that the mini project entitled <strong>"EduSchedule — Academic Faculty &amp; Timetable Management System"</strong> is a bonafide work carried out by <strong>Swapnil Sahu</strong> (PRN: <strong>ADYPU2024BCA042</strong>), a student of Bachelor of Computer Applications (AI &amp; Data Science), Semester IV, at the School of Information Technology, Ajeenkya DY Patil University, Pune.
+    </p>
+
+    <p>
+      This project report is submitted in partial fulfillment of the academic requirements prescribed by the university for the academic year 2026–2027. The project was implemented and verified under standard academic supervision, and the results presented in this report represent the student's authentic work.
+    </p>
+
+    <table class="sig-table">
+      <tr>
+        <td style="width: 33%;">
+          <div class="sig-line">
+            Prof. Sachin Deshmukh<br>
+            <span style="font-size: 8.5pt; font-weight: normal; color: #64748b;">Project Guide</span>
+          </div>
+        </td>
+        <td style="width: 33%;">
+          <div class="sig-line">
+            Dr. R. K. Sharma<br>
+            <span style="font-size: 8.5pt; font-weight: normal; color: #64748b;">Head of Department</span>
+          </div>
+        </td>
+        <td style="width: 33%;">
+          <div class="sig-line">
+            External Examiner<br>
+            <span style="font-size: 8.5pt; font-weight: normal; color: #64748b;">Seal &amp; Signature</span>
+          </div>
+        </td>
+      </tr>
+    </table>
+
+    <div style="height: 30px;"></div>
+
+    <h1 class="page-title">Acknowledgement</h1>
+    <div class="title-rule"></div>
+
+    <p style="margin-top: 14px;">
+      I express my sincere gratitude to my project guide, Prof. Sachin Deshmukh, for providing constant direction, constructive suggestions, and technical encouragement throughout the design and implementation of this timetable management system.
+    </p>
+    <p>
+      I also thank Dr. R. K. Sharma, Head of the Department, and the faculty members of the School of Information Technology for their support and for making laboratory and cloud computing resources accessible.
+    </p>
+    <p>
+      I extend my thanks to Ajeenkya DY Patil University for creating an academic curriculum that fosters practical problem solving and full-stack software development.
+    </p>
+    <p>
+      Lastly, I thank my peers and family whose feedback and encouragement helped me successfully complete this mini project within the given timeframe.
+    </p>
+
+    <div style="margin-top: 25px; text-align: right;">
+      <p style="font-weight: 700; margin-bottom: 2px;">Swapnil Sahu</p>
+      <p style="font-size: 9.5pt; color: #64748b;">PRN: ADYPU2024BCA042</p>
+    </div>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 2 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 3: ABSTRACT & TABLE OF CONTENTS
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Abstract</h1>
+    <div class="title-rule"></div>
+
+    <p>
+      Academic institutions face significant administrative challenges when preparing weekly class timetables. Manual scheduling using spreadsheets frequently results in resource conflicts, such as booking the same faculty member for two simultaneous classes, assigning a classroom to multiple student cohorts, or creating overlapping periods. Furthermore, traditional systems fail to adapt when switching between college degree structures (departments, semesters, and divisions) and secondary school models (classes 1 through 12).
+    </p>
+
+    <p>
+      This project presents <strong>EduSchedule</strong>, a full-stack academic timetable and faculty management web application. The system provides automated three-tier conflict detection covering student groups, faculty, and physical classrooms before any schedule slot is stored in the database. Built with Next.js 16, TypeScript, Supabase PostgreSQL, and Tailwind CSS, the application offers role-based access for administrators and teaching faculty. The solution also integrates a daily faculty attendance roll-call module, chronological period ordering (Periods 1 to 7), a dynamic institution mode switcher, and instant client-side PDF timetable generation. The system eliminates manual scheduling clashes and delivers clear schedules across all departments.
+    </p>
+
+    <div style="height: 18px;"></div>
+
+    <h1 class="page-title">Table of Contents</h1>
+    <div class="title-rule"></div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 12%; text-align: center;">Sr. No.</th>
+          <th>Chapter / Section Title</th>
+          <th style="width: 15%; text-align: center;">Page No.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: center;">1</td>
+          <td>Cover Page</td>
+          <td style="text-align: center;">1</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">2</td>
+          <td>Certificate and Acknowledgement</td>
+          <td style="text-align: center;">2</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">3</td>
+          <td>Abstract and Table of Contents</td>
+          <td style="text-align: center;">3</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">4</td>
+          <td>Introduction, Problem Statement, Objectives and Scope</td>
+          <td style="text-align: center;">4</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">5</td>
+          <td>Technology Stack and Deployment Architecture</td>
+          <td style="text-align: center;">5</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">6</td>
+          <td>System Design and Relational Architecture</td>
+          <td style="text-align: center;">6</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">7</td>
+          <td>System Modules and Core Conflict Detection Logic</td>
+          <td style="text-align: center;">7</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">8</td>
+          <td>Application Screenshots — Part I (Admin Portal &amp; Scheduler)</td>
+          <td style="text-align: center;">8</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">9</td>
+          <td>Application Screenshots — Part II (Faculty &amp; Attendance)</td>
+          <td style="text-align: center;">9</td>
+        </tr>
+        <tr>
+          <td style="text-align: center;">10</td>
+          <td>Testing, Limitations, Future Scope, Conclusion and References</td>
+          <td style="text-align: center;">10</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 3 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 4: INTRODUCTION, PROBLEM STATEMENT, OBJECTIVES & SCOPE
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Introduction &amp; Problem Statement</h1>
+    <div class="title-rule"></div>
+
+    <h2>1. Introduction</h2>
+    <p>
+      Educational institutions operate on tightly structured bell schedules comprising lectures, laboratory practicals, and tutorial sessions. Coordinating hundreds of faculty members, student cohorts, and specialized laboratory rooms every week is a complex logistical task. In most institutions, schedule creation is conducted manually by academic coordinators using generic spreadsheets. Because spreadsheets lack relational constraints and proactive validation, schedule collisions routinely emerge. EduSchedule was engineered to solve this challenge by replacing error-prone manual spreadsheets with an interactive, web-based management platform featuring automated clash detection and centralized timetable views.
+    </p>
+
+    <h2>2. Problem Statement</h2>
+    <p>
+      Manual timetable planning suffers from critical vulnerabilities that disrupt institutional operations:
+    </p>
+    <ul>
+      <li><strong>Double Booking of Faculty:</strong> Professors are mistakenly assigned to two different classrooms during the same period, causing missed lectures and administrative friction.</li>
+      <li><strong>Room Collisions:</strong> Two cohorts arrive at the same computer laboratory or seminar hall simultaneously due to uncoordinated scheduling.</li>
+      <li><strong>Rigid Nomenclature:</strong> Existing commercial tools are locked to single institution models and cannot switch smoothly between higher education programs (B.Tech, BCA) and standard school grades (Class 1 to 12).</li>
+      <li><strong>Fragmented Attendance:</strong> Faculty attendance tracking is kept in isolated paper registers, disconnecting real-time faculty availability from active daily schedules.</li>
+    </ul>
+
+    <h2>3. Project Objectives</h2>
+    <ul>
+      <li>Implement automated, real-time three-layer clash detection (Student Group, Faculty, and Classroom) to guarantee conflict-free scheduling.</li>
+      <li>Provide a dual-mode institutional model supporting both College (departments/divisions) and School (K-12 classes/sections) from a unified database.</li>
+      <li>Develop a responsive weekly timetable builder with strict chronological period ordering (Period 1 through Period 7).</li>
+      <li>Integrate a daily faculty attendance roll-call module supporting Present, Absent, On Leave, and Late states with bulk marking capabilities.</li>
+      <li>Enable direct, client-side vector PDF generation of formatted weekly schedules for administrative printing and distribution.</li>
+    </ul>
+
+    <h2>4. Project Scope</h2>
+    <p>
+      The system is designed for deployment within schools, polytechnic institutes, and collegiate universities. The application scope covers role-based authentication (Admin and Faculty), interactive timetable matrices, daily faculty attendance rosters, personal faculty schedule views, and PDF reporting. Real-time notifications and biometric integration remain outside the initial project boundary and are designated for future milestones.
+    </p>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 4 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 5: TECHNOLOGY STACK & DEPLOYMENT
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Technology Stack &amp; Deployment</h1>
+    <div class="title-rule"></div>
+
+    <h2>1. Technology Stack Breakdown</h2>
+    <p>
+      The system is constructed using modern web standards prioritizing execution speed, type safety, relational data integrity, and low maintenance overhead:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 22%;">Layer</th>
+          <th style="width: 26%;">Technology</th>
+          <th>Why It Was Used</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Language</strong></td>
+          <td>TypeScript 5 / ES2024</td>
+          <td>Provides compile-time type safety across database entities, API contracts, and user interface state management.</td>
+        </tr>
+        <tr>
+          <td><strong>Web Framework</strong></td>
+          <td>Next.js 16 (App Router)</td>
+          <td>Offers unified full-stack architecture with React 19 Server Components for fast page loading and API Route Handlers.</td>
+        </tr>
+        <tr>
+          <td><strong>User Interface</strong></td>
+          <td>Tailwind CSS v4</td>
+          <td>Utility-first CSS framework enabling a consistent campus theme (#2F5D8A), responsive layout, and print stylesheets.</td>
+        </tr>
+        <tr>
+          <td><strong>Database</strong></td>
+          <td>PostgreSQL on Supabase</td>
+          <td>Relational database offering ACID compliance, foreign key cascade constraints, and instant PostgREST connectivity.</td>
+        </tr>
+        <tr>
+          <td><strong>Authentication</strong></td>
+          <td>JWT (jose) + bcryptjs</td>
+          <td>Stateless session cookies using signed JSON Web Tokens and salted cryptographic hashing for faculty and admin credentials.</td>
+        </tr>
+        <tr>
+          <td><strong>Document Export</strong></td>
+          <td>jsPDF &amp; jspdf-autotable</td>
+          <td>Enables vector PDF generation directly in the client browser without overloading serverless compute limits.</td>
+        </tr>
+        <tr>
+          <td><strong>Iconography</strong></td>
+          <td>Lucide React</td>
+          <td>Clean, lightweight SVG icon system for unambiguous navigation, schedule cards, and operational status badges.</td>
+        </tr>
+        <tr>
+          <td><strong>Testing / Automation</strong></td>
+          <td>Playwright Test</td>
+          <td>Automates end-to-end browser workflows, verifying form submissions, clash modal alerts, and capturing screenshots.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2. Deployment Architecture</h2>
+    <p>
+      EduSchedule is deployed as a cloud-native serverless web application. The application code is hosted on GitHub (<code>https://github.com/Epilougee/sarvesh.git</code>) and integrated with the Vercel cloud edge network via automated CI/CD pipelines. Every push to the <code>main</code> branch triggers automated linting, TypeScript compilation, bundle optimization, and edge deployment to the production URL: <strong>https://tmtb-management.vercel.app</strong>.
+    </p>
+    <p>
+      Database operations are hosted on a managed cloud PostgreSQL instance on Supabase. Network communication between the Next.js edge route handlers and the database is secured using SSL/TLS encryption. Sensitive parameters, including the service role key and session tokens, are stored securely inside environment configuration variables.
+    </p>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 5 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 6: SYSTEM DESIGN & RELATIONAL ARCHITECTURE
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">System Design &amp; Architecture</h1>
+    <div class="title-rule"></div>
+
+    <h2>1. User Roles and Access Permissions</h2>
+    <ul>
+      <li><strong>Administrator (Admin):</strong> Has complete authority over institutional settings, faculty records, classrooms, courses, timeslots, timetable allocations, and daily faculty attendance marking.</li>
+      <li><strong>Teaching Faculty:</strong> Accesses a focused, read-only personal portal displaying their assigned weekly classes, room numbers, workload metrics, and personal attendance history.</li>
+    </ul>
+
+    <h2>2. System Architecture Diagram</h2>
+    <div style="text-align: center; margin: 6px 0;">
+      <svg width="580" height="95" viewBox="0 0 580 95" style="border: 1px solid #cbd5e1; border-radius: 4px; background: #f8fafc;">
+        <!-- Browser Box -->
+        <rect x="20" y="20" width="135" height="55" rx="5" fill="#ffffff" stroke="#2F5D8A" stroke-width="1.5"/>
+        <text x="87" y="42" font-size="10" font-weight="bold" fill="#2F5D8A" text-anchor="middle">Client Browser</text>
+        <text x="87" y="58" font-size="8.5" fill="#64748b" text-anchor="middle">React 19 / Tailwind UI</text>
+
+        <!-- Arrow 1 -->
+        <line x1="155" y1="47" x2="205" y2="47" stroke="#2F5D8A" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="180" y="40" font-size="7.5" fill="#64748b" text-anchor="middle">HTTPS</text>
+
+        <!-- Server Box -->
+        <rect x="205" y="20" width="160" height="55" rx="5" fill="#2F5D8A" stroke="#1e3a5f" stroke-width="1.5"/>
+        <text x="285" y="42" font-size="10" font-weight="bold" fill="#ffffff" text-anchor="middle">Next.js Edge Server</text>
+        <text x="285" y="58" font-size="8.5" fill="#e2e8f0" text-anchor="middle">API Routes &amp; Clash Engine</text>
+
+        <!-- Arrow 2 -->
+        <line x1="365" y1="47" x2="415" y2="47" stroke="#2F5D8A" stroke-width="1.5"/>
+        <text x="390" y="40" font-size="7.5" fill="#64748b" text-anchor="middle">SSL / REST</text>
+
+        <!-- DB Box -->
+        <rect x="415" y="20" width="145" height="55" rx="5" fill="#ffffff" stroke="#2F5D8A" stroke-width="1.5"/>
+        <text x="487" y="42" font-size="10" font-weight="bold" fill="#2F5D8A" text-anchor="middle">Supabase PostgreSQL</text>
+        <text x="487" y="58" font-size="8.5" fill="#64748b" text-anchor="middle">Normalized Tables (3NF)</text>
+      </svg>
+    </div>
+
+    <h2>3. Database Schema and Entity Relationships</h2>
+    <p>
+      The relational database satisfies Third Normal Form (3NF) requirements. All table relations maintain referential integrity through foreign keys configured with cascading deletions:
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 22%;">Table Name</th>
+          <th style="width: 38%;">Primary Fields</th>
+          <th>Relational Dependencies / Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>users</code></td>
+          <td><code>id (PK)</code>, name, email, password_hash, role</td>
+          <td>Core authentication table for administrators and faculty.</td>
+        </tr>
+        <tr>
+          <td><code>faculty</code></td>
+          <td><code>id (PK)</code>, user_id (FK), department, designation, phone</td>
+          <td>Links to <code>users.id</code> via 1-to-1 foreign key relationship.</td>
+        </tr>
+        <tr>
+          <td><code>groups</code></td>
+          <td><code>id (PK)</code>, name</td>
+          <td>Unified table storing cohorts (e.g. <code>BCA Sem 3 A</code> or <code>Class 10-A</code>).</td>
+        </tr>
+        <tr>
+          <td><code>subjects</code></td>
+          <td><code>id (PK)</code>, name, code</td>
+          <td>Stores academic courses and subject codes (e.g. <code>CS301</code>).</td>
+        </tr>
+        <tr>
+          <td><code>rooms</code></td>
+          <td><code>id (PK)</code>, name, capacity</td>
+          <td>Classrooms, computing labs, and institutional seminar halls.</td>
+        </tr>
+        <tr>
+          <td><code>timeslots</code></td>
+          <td><code>id (PK)</code>, label, start_time, end_time</td>
+          <td>Chronological bell schedule periods (e.g. Period 1: 09:00 - 09:50).</td>
+        </tr>
+        <tr>
+          <td><code>timetable</code></td>
+          <td><code>id (PK)</code>, group_id, subject_id, faculty_id, room_id, day, timeslot_id</td>
+          <td>Central schedule matrix linking group, subject, faculty, room, and period.</td>
+        </tr>
+        <tr>
+          <td><code>settings</code></td>
+          <td><code>key (PK)</code>, value</td>
+          <td>Configures active institutional mode (<code>college</code> or <code>school</code>).</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 6 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 7: MODULES & CORE CONFLICT DETECTION LOGIC
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Modules &amp; Core Logic</h1>
+    <div class="title-rule"></div>
+
+    <h2>1. Module Overview</h2>
+    <ul style="margin-top: 2px; margin-bottom: 8px;">
+      <li><strong>Authentication &amp; RBAC:</strong> Validates user credentials with bcrypt encryption and issues signed JWT session cookies, routing admins to the control dashboard and faculty to their personal schedule.</li>
+      <li><strong>Timetable Builder:</strong> Interactive grid allowing coordinators to assign classes across days and periods. Automatically runs pre-commit conflict checks before writing to the database.</li>
+      <li><strong>Faculty Attendance Portal:</strong> Daily roll-call tool to record faculty presence (Present, Absent, On Leave, Late) with bulk marking and personal attendance percentage tracking.</li>
+      <li><strong>Institution Mode Adapter:</strong> Dynamically switches cohort nomenclature and curriculum between College (B.Tech/BCA) and School (Classes 1–12) models from a unified database schema.</li>
+    </ul>
+
+    <h2>2. Core Conflict Detection Logic (src/lib/clashDetection.ts)</h2>
+    <p>
+      The core logic of EduSchedule resides in <code>detectClash()</code>. When an allocation request is submitted, the system queries the database across three independent dimensions for the target <code>(day, timeslot_id)</code>:
+    </p>
+    <ul style="margin-top: 2px; margin-bottom: 6px;">
+      <li><strong>Group Clash:</strong> Verifies if the student cohort already has another lecture assigned at that period.</li>
+      <li><strong>Faculty Clash:</strong> Verifies if the selected instructor is already teaching another group.</li>
+      <li><strong>Room Clash:</strong> Verifies if the designated classroom is occupied by another cohort.</li>
+    </ul>
+
+    <div class="worked-example-box" style="padding: 6px 10px; margin: 6px 0; font-size: 9pt;">
+      <strong>Worked Real-World Example from Seed Data:</strong><br>
+      • Target Period: <code>Monday</code>, <code>Period 1 (09:00 AM – 09:50 AM)</code> [timeslot_id = 1].<br>
+      • Pre-existing entry: <code>Dr. Ramesh Sharma</code> (faculty_id = 9) is scheduled teaching <code>CS301</code> to <code>BCA Sem 3 A</code> in <code>Room 101</code>.<br>
+      • Scheduling attempt: Admin attempts to schedule <code>Dr. Ramesh Sharma</code> to teach <code>B.Tech CSE Sem 5 A</code> in <code>Seminar Hall 1</code> on Monday during Period 1.<br>
+      • Execution Result: Faculty conflict query detects existing record. Operation is blocked, returning: <em>"Faculty Clash: Dr. Ramesh Sharma is already teaching 'Data Structures &amp; Algorithms' to BCA Sem 3 A in Room 101 on Monday during Period 1."</em>
+    </div>
+
+    <h3 style="margin: 6px 0 2px 0;">Conflict Detection Code Snippet</h3>
+    <pre class="code-snippet" style="font-size: 8pt; margin: 4px 0 8px 0; padding: 6px 8px;">
+// Step 2 of 3: Faculty Conflict Check in src/lib/clashDetection.ts
+let facultyQuery = supabase.from("timetable")
+  .select(`id, groups:group_id(name), subjects:subject_id(name), rooms:room_id(name), faculty:faculty_id(users:user_id(name))`)
+  .eq("faculty_id", facultyId).eq("day", day).eq("timeslot_id", timeslotId);
+
+if (excludeId) facultyQuery = facultyQuery.neq("id", excludeId);
+const { data: facultyConflicts } = await facultyQuery;
+
+if (facultyConflicts &amp;&amp; facultyConflicts.length &gt; 0) {
+  const c = facultyConflicts[0] as any;
+  return {
+    hasClash: true,
+    message: `Faculty Clash: ${c.faculty?.users?.name} is already teaching '${c.subjects?.name}' to ${c.groups?.name} in ${c.rooms?.name} on ${day} during ${periodInfo}.`
+  };
+}</pre>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 7 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 8: SCREENSHOTS (PART 1)
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Application Screenshots — Part I</h1>
+    <div class="title-rule"></div>
+
+    <div class="screenshot-grid">
+      <!-- Screenshot 1 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/01-login.png" alt="Login Portal">
+        <div class="screenshot-caption">
+          <strong>Figure 1: Role-Based Authentication Portal.</strong> Provides secure sign-in with quick-access demo credentials for administrative and faculty roles.
+        </div>
+      </div>
+
+      <!-- Screenshot 2 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/02-dashboard.png" alt="Admin Dashboard">
+        <div class="screenshot-caption">
+          <strong>Figure 2: Administrative Dashboard.</strong> Displays real-time summary statistics for faculty, subjects, rooms, and active attendance headcount.
+        </div>
+      </div>
+
+      <!-- Screenshot 3 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/03-timetable-builder.png" alt="Timetable Builder">
+        <div class="screenshot-caption">
+          <strong>Figure 3: Interactive Timetable Builder.</strong> Renders periods in strict chronological order (Periods 1 to 7) with color-coded lecture cards.
+        </div>
+      </div>
+
+      <!-- Screenshot 4 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/04-clash-detection.png" alt="Clash Detection Modal">
+        <div class="screenshot-caption">
+          <strong>Figure 4: Automated Conflict Detection Alert.</strong> Prevents double-booking by warning the user immediately when a faculty or room clash occurs.
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 8 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 9: SCREENSHOTS (PART 2)
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Application Screenshots — Part II</h1>
+    <div class="title-rule"></div>
+
+    <div class="screenshot-grid">
+      <!-- Screenshot 5 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/05-weekly-timetable-view.png" alt="Weekly Timetable Matrix">
+        <div class="screenshot-caption">
+          <strong>Figure 5: Master Weekly Timetable View.</strong> Filterable matrix organized by Cohort, Faculty, or Room, including an automated PDF export action.
+        </div>
+      </div>
+
+      <!-- Screenshot 6 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/06-faculty-attendance.png" alt="Faculty Attendance Roster">
+        <div class="screenshot-caption">
+          <strong>Figure 6: Faculty Attendance Roster.</strong> Daily roll-call tool with status badges, remarks, check-in timestamps, and a bulk "Mark All Present" button.
+        </div>
+      </div>
+
+      <!-- Screenshot 7 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/07-faculty-my-timetable.png" alt="Personal Faculty Schedule">
+        <div class="screenshot-caption">
+          <strong>Figure 7: Personal Faculty Portal.</strong> Dedicated read-only view displaying assigned lectures, room locations, and weekly teaching workload.
+        </div>
+      </div>
+
+      <!-- Screenshot 8 -->
+      <div class="screenshot-card">
+        <img class="screenshot-img" src="screenshots/08-school-mode.png" alt="School Mode Environment">
+        <div class="screenshot-caption">
+          <strong>Figure 8: Dynamic School Mode Environment.</strong> Adapts nomenclature and data to secondary education classes (Class 1 to 12) and school curricula.
+        </div>
+      </div>
+    </div>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 9 of 10</span>
+    </div>
+  </div>
+
+
+  <!-- ========================================================
+       PAGE 10: TESTING, LIMITATIONS, CONCLUSION & REFERENCES
+       ======================================================== -->
+  <div class="page">
+    <h1 class="page-title">Testing, Conclusion &amp; References</h1>
+    <div class="title-rule"></div>
+
+    <h2>1. Test Cases &amp; Real Execution Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 14%;">Test ID</th>
+          <th style="width: 32%;">Action / Input</th>
+          <th style="width: 38%;">Expected Result</th>
+          <th style="width: 16%; text-align: center;">Actual Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>TC-01</strong></td>
+          <td>Login with <code>admin</code> / <code>admin123</code></td>
+          <td>System redirects to <code>/dashboard</code> with admin navigation.</td>
+          <td style="text-align: center; color: #166534; font-weight: bold;">PASS</td>
+        </tr>
+        <tr>
+          <td><strong>TC-02</strong></td>
+          <td>Login with <code>ramesh.sharma@campus.edu</code></td>
+          <td>System redirects to personal portal <code>/my-timetable</code>.</td>
+          <td style="text-align: center; color: #166534; font-weight: bold;">PASS</td>
+        </tr>
+        <tr>
+          <td><strong>TC-03</strong></td>
+          <td>Attempt login with invalid password</td>
+          <td>Display "Invalid credentials" error banner; block entry.</td>
+          <td style="text-align: center; color: #166534; font-weight: bold;">PASS</td>
+        </tr>
+        <tr>
+          <td><strong>TC-04</strong></td>
+          <td>Schedule Dr. Ramesh on Monday Period 1 in Grp 3</td>
+          <td>Detect faculty clash; display error alert; block DB insert.</td>
+          <td style="text-align: center; color: #166534; font-weight: bold;">PASS</td>
+        </tr>
+        <tr>
+          <td><strong>TC-05</strong></td>
+          <td>Switch institution type to "School" in settings</td>
+          <td>Update cohort lists to Class 1–12 and school subjects.</td>
+          <td style="text-align: center; color: #166534; font-weight: bold;">PASS</td>
+        </tr>
+        <tr>
+          <td><strong>TC-06</strong></td>
+          <td>Click "Mark All Present" on Attendance page</td>
+          <td>Update all faculty statuses to "present" with current time.</td>
+          <td style="text-align: center; color: #166534; font-weight: bold;">PASS</td>
+        </tr>
+        <tr>
+          <td><strong>TC-07</strong></td>
+          <td>Click "Download PDF" on Timetable View</td>
+          <td>Generate formatted vector PDF file on client browser.</td>
+          <td style="text-align: center; color: #166534; font-weight: bold;">PASS</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2. Limitations &amp; Future Scope</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+      <div>
+        <p style="font-weight: 700; color: #2F5D8A; margin-bottom: 2px;">Current Limitations:</p>
+        <ul style="font-size: 9.5pt; margin-left: 14px;">
+          <li>Lacks biometric device integration for automated roll-call.</li>
+          <li>Does not send SMS or push alerts when classes are rescheduled.</li>
+          <li>Timetable creation requires manual cell assignment by admin.</li>
+        </ul>
+      </div>
+      <div>
+        <p style="font-weight: 700; color: #2F5D8A; margin-bottom: 2px;">Future Scope:</p>
+        <ul style="font-size: 9.5pt; margin-left: 14px;">
+          <li>Automated timetable generation using genetic algorithms.</li>
+          <li>Integration with institutional RFID card readers and turnstiles.</li>
+          <li>Native mobile application for real-time student notifications.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>3. Conclusion</h2>
+    <p style="font-size: 9.5pt;">
+      The EduSchedule project provides an effective solution to academic scheduling challenges. By enforcing automated three-tier clash detection across cohorts, faculty, and classrooms, the system eliminates human error from timetable creation. The integration of role-based portals, faculty attendance tracking, school and college mode flexibility, and PDF export functionality delivers an end-to-end operational platform for educational institutions.
+    </p>
+
+    <h2>4. References</h2>
+    <ol style="font-size: 8.5pt; margin-left: 14px; margin-bottom: 0;">
+      <li>Next.js Documentation — App Router &amp; Server Components, Vercel Inc., 2026. (https://nextjs.org/docs)</li>
+      <li>PostgreSQL 16 Documentation — Relational Integrity &amp; Constraints, The PostgreSQL Global Development Group.</li>
+      <li>Supabase Documentation — PostgREST Client &amp; Database Hosting, Supabase Inc., 2026. (https://supabase.com/docs)</li>
+      <li>Tailwind CSS v4 Specification — Modern Utility-First Web Design, Tailwind Labs, 2026.</li>
+    </ol>
+
+    <div class="page-footer">
+      <span>EduSchedule — Project Report</span>
+      <span>Page 10 of 10</span>
+    </div>
+  </div>
+
+</body>
+</html>
