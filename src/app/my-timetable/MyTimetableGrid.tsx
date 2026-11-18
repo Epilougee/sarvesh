@@ -73,7 +73,13 @@ export function MyTimetableGrid({
                       className="p-2 border-r border-slate-200 last:border-r-0 align-top h-[85px] w-[140px]"
                     >
                       {slot ? (
-                        <div className="h-full rounded-md border border-slate-200 bg-[#F8FAFC] p-2 flex flex-col justify-between">
+                        <div
+                          className={`h-full rounded-md p-2 flex flex-col justify-between border ${
+                            slot.subject_code === "BREAK" || slot.subject_name?.toLowerCase().includes("break")
+                              ? "bg-amber-50 border-amber-200 text-amber-900"
+                              : "bg-[#F8FAFC] border-slate-200"
+                          }`}
+                        >
                           <div>
                             <div className="font-semibold text-slate-800 text-[11px] truncate">
                               {slot.subject_name}
@@ -83,8 +89,14 @@ export function MyTimetableGrid({
                             </div>
                           </div>
                           <div className="text-[10px] text-slate-600 border-t border-slate-200/80 pt-1 mt-1 truncate">
-                            <div>{slot.group_name}</div>
-                            <div className="text-slate-400 truncate">{slot.room_name}</div>
+                            {slot.subject_code === "BREAK" ? (
+                              <div className="text-amber-800 font-medium">Recess / Break</div>
+                            ) : (
+                              <>
+                                <div>{slot.group_name}</div>
+                                <div className="text-slate-400 truncate">{slot.room_name}</div>
+                              </>
+                            )}
                           </div>
                         </div>
                       ) : (

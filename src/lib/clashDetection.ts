@@ -28,6 +28,21 @@ export async function detectClash(
     ? `${timeslot.label} (${timeslot.start_time} - ${timeslot.end_time})`
     : `Timeslot #${timeslotId}`;
 
+  // If assigning a Break, no resource clash checks needed
+  const { data: subObj } = await supabase
+    .from("subjects")
+    .select("code, name")
+    .eq("id", subjectId)
+    .maybeSingle();
+
+  if (
+    subObj?.code === "BREAK" ||
+    subObj?.name?.toLowerCase().includes("break") ||
+    subObj?.name?.toLowerCase().includes("recess")
+  ) {
+    return { hasClash: false, message: "" };
+  }
+
   // 1. Check Group Clash (Student group already has a lecture scheduled)
   let groupQuery = supabase
     .from("timetable")

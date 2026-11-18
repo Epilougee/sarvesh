@@ -66,11 +66,16 @@ export function exportTimetableToPDF({
     timeslots.forEach((ts) => {
       const slot = matrix[day]?.[ts.id];
       if (slot) {
-        let cellText = `${slot.subject_name || ""}`;
-        if (slot.subject_code) cellText += ` (${slot.subject_code})`;
-        if (slot.faculty_name) cellText += `\n${slot.faculty_name}`;
-        if (slot.group_name) cellText += `\n${slot.group_name}`;
-        if (slot.room_name) cellText += `\n${slot.room_name}`;
+        let cellText = "";
+        if (slot.subject_code === "BREAK" || slot.subject_name?.toLowerCase().includes("break")) {
+          cellText = `${slot.subject_name || "Break / Recess"}\n(Recess Interval)`;
+        } else {
+          cellText = `${slot.subject_name || ""}`;
+          if (slot.subject_code) cellText += ` (${slot.subject_code})`;
+          if (slot.faculty_name) cellText += `\n${slot.faculty_name}`;
+          if (slot.group_name) cellText += `\n${slot.group_name}`;
+          if (slot.room_name) cellText += `\n${slot.room_name}`;
+        }
         row.push(cellText);
       } else {
         row.push("—");
